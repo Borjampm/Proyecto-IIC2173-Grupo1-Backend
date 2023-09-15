@@ -1,0 +1,56 @@
+version: "3.8"
+services:
+  app:
+    container_name: app
+    build: .
+    command: bash -c "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+    volumes:
+      - .:/app
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    container_name: postgresql_db
+    image: postgres:14
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+
+  mqtt:
+    container_name: mqtt
+    build: .
+    command: bash -c "python3 listenertest.py"
+    volumes_from:
+      - app
+    ports:
+      - 1883:1883
+    # networks:
+    #   - app-network
+    restart: always
+
+volumes:
+  db:
+    driver: local
+
+#   db:
+#     image: postgres:15-alpine
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data/
+#     expose:
+#       - 5432
+#     environment:
+#       - POSTGRES_USER=postgres
+#       - POSTGRES_PASSWORD=postgres
+#       - POSTGRES_DB=postgres
+
+# volumes:
+#   postgres_data:
