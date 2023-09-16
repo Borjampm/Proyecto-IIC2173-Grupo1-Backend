@@ -13,13 +13,6 @@ function parser(stringData) {
 }
 
 function parseIdAndDatetime(data) {
-    const idAndDateIndex = data.findIndex(line => line.includes(RESPONSE_ID));
-    let lines = splitInComma(data[idAndDateIndex]);
-    data.splice(idAndDateIndex, 1);
-
-    lines = removeNonKeyValueLines(lines);
-    lines = removeStringSintax(lines);
-    RESPONSE_DICT = insertValuesOnDictionary(RESPONSE_DICT, lines, ':')
 
     return data;
 }
@@ -35,7 +28,7 @@ function parseEachCompanyInfo(data) {
 
     return data;
 }
- 
+
 function splitInComma(line) {
     return line.split(',');
 }
