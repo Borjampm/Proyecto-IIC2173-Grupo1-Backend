@@ -5,13 +5,13 @@ services:
     build:
       context: ./Listener
       dockerfile: Dockerfile
-    container_name: LISTENER
+    container_name: Listener
     ports:
       - "${PORT_LISTENER}:${PORT_LISTENER}"
     volumes:
       - ./Listener/src:/Listener/src
     networks:
-      - e0-network
+      - back-network
     restart: unless-stopped
     environment:
       PORT_LISTENER: ${PORT_LISTENER}
@@ -27,7 +27,7 @@ services:
     volumes:
       - ./API/src:/API/src
     networks:
-      - e0-network
+      - back-network
     depends_on:
       - db
       - listener
@@ -41,21 +41,21 @@ services:
 
   db:
     image: postgres:latest
-    container_name: DATABASE
+    container_name: Database
     restart: always
     ports:
       - "${DB_PORT}:${DB_PORT}"
     networks:
-      - e0-network
+      - back-network
     volumes:
       - db-volume:/var/lib/postgresql/data/
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: e0_db
+      POSTGRES_DB: ${DB_NAME}
 
 networks:
-  e0-network:
+  back-network:
     driver: bridge
 
 volumes:
