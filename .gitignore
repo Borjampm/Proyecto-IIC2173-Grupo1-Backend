@@ -1,1 +1,6 @@
-*.pem
+node_modules/
+API/node_modules/
+Listener/node_modules/
+.env
+API/.env
+Listener/.env

@@ -1,0 +1,22 @@
+{
+  "name": "E0-API",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Alzvil",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "koa": "^2.14.2",
+    "koa-router": "^12.0.0",
+    "koa-body": "^6.0.1",
+    "koa-logger": "^3.2.1",
+    "nodemon": "^3.0.1",
+    "pg": "^8.11.3",
+    "sequelize": "^6.32.1",
+    "sequelize-cli": "^6.6.1"
+  },
+  "scripts": {
+    "api": "nodemon src/index.js"
+  }
+}

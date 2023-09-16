@@ -1,0 +1,17 @@
+{
+  "name": "E0-Listener",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Alzvil",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.5.0",
+    "dotenv": "^16.3.1",
+    "koa": "^2.14.2",
+    "mqtt": "^5.0.3",
+    "nodemon": "^3.0.1"
+  },
+  "scripts": {
+    "listener": "nodemon src/index.js"
+  }
+}

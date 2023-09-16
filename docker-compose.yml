@@ -1,56 +1,62 @@
-version: "3.8"
+version: '3.3'
+
 services:
-  app:
-    container_name: app
-    build: .
-    command: bash -c "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
-    volumes:
-      - .:/app
+  listener:
+    build:
+      context: ./Listener
+      dockerfile: Dockerfile
+    container_name: LISTENER
     ports:
-      - 8000:8000
+      - "${PORT_LISTENER}:${PORT_LISTENER}"
+    volumes:
+      - ./Listener/src:/Listener/src
+    networks:
+      - e0-network
+    restart: unless-stopped
+    environment:
+      PORT_LISTENER: ${PORT_LISTENER}
+      API_URL: ${API_URL}
+
+  api:
+    build:
+      context: ./API
+      dockerfile: Dockerfile
+    container_name: API
+    ports:
+      - "${PORT_API}:${PORT_API}"
+    volumes:
+      - ./API/src:/API/src
+    networks:
+      - e0-network
     depends_on:
       - db
-    restart: always
+      - listener
+    restart: unless-stopped
+    environment:
+      PORT_API: ${PORT_API}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_HOST: ${DB_HOST}
 
   db:
-    container_name: postgresql_db
-    image: postgres:14
+    image: postgres:latest
+    container_name: DATABASE
     restart: always
     ports:
-      - 5432:5432
+      - "${DB_PORT}:${DB_PORT}"
+    networks:
+      - e0-network
     volumes:
-      - db:/var/lib/postgresql/data
+      - db-volume:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: e0_db
 
-  mqtt:
-    container_name: mqtt
-    build: .
-    command: bash -c "python3 listenertest.py"
-    volumes_from:
-      - app
-    ports:
-      - 1883:1883
-    # networks:
-    #   - app-network
-    restart: always
+networks:
+  e0-network:
+    driver: bridge
 
 volumes:
-  db:
-    driver: local
-
-#   db:
-#     image: postgres:15-alpine
-#     volumes:
-#       - postgres_data:/var/lib/postgresql/data/
-#     expose:
-#       - 5432
-#     environment:
-#       - POSTGRES_USER=postgres
-#       - POSTGRES_PASSWORD=postgres
-#       - POSTGRES_DB=postgres
-
-# volumes:
-#   postgres_data:
+  db-volume:
