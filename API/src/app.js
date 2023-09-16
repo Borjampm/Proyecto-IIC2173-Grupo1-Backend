@@ -3,8 +3,16 @@ const koaLogger = require("koa-logger");
 const { koaBody } =  require("koa-body");
 const orm = require("./sequelize/models");
 const router = require("./routes.js");
+const cors = require("@koa/cors");
+
 
 const app = new koa();
+app.use(cors({
+    origin: 'http://localhost:5173',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // Enable cookies and credentials for cross-origin requests if needed
+  }));
+
 app.context.orm = orm;
 
 app.use(koaLogger());
