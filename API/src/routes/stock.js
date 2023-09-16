@@ -8,41 +8,40 @@ const router = new Router();
 router.post('stock.create', '/new', async (ctx) => {
     try {
         const request = ctx.request.body
-        
-        const stock = await ctx.orm.Stock.create({
-            stocks_id: request.stocks_id,
-            datetime: request.datetime
-        });
 
-        const companies = [];
+        const stocksId = request.stocks_id;
+        const datetime = request.datetime;
+        const stocks = request.stocks;
 
-        for (element in request.stocks) {
-            const data = request.stocks[element]
-            const company = await ctx.orm.Company.create({
-                symbol: data.symbol,
-                shortName: data.shortName,
-                price: data.price,
-                currency: data.currency,
-                source: data.source,
-                stockId: request.stocks_id
+        for (let k in stocks) {
+            // find if company exists
+            let company = await ctx.orm.Company.findOne({
+                where: {
+                    symbol: stocks[k].symbol
+                }
             })
-            companies.push(company);
+            // if no company exists, create it
+            if (!company) {
+                company = await ctx.orm.Company.create({
+                    symbol: stocks[k].symbol,
+                    shortName: stocks[k].shortName,
+                })
+            }
+
+            // create stock
+            let newStock = await ctx.orm.Stocks.create({
+                stocksId: stocksId,
+                datetime: datetime,
+                price: stocks[k].price,
+                currency: stocks[k].currency,
+                source: stocks[k].source
+            })
+            // associate stock with company
+            await ctx.orm.CompanyStocks.create({
+                companyId: company.id,
+                stockId: newStock.id
+        })
         }
-
-        const mappedCompanies = companies.map((company) => ({
-            symbol: company.symbol,
-            shortName: company.shortName,
-            price: company.price,
-            currency: company.currency,
-            source: company.source
-        }))
-
-        ctx.body = {
-            stocks: mappedCompanies,
-            stocks_id: stock.stocks_id,
-            datetime: stock.datetime
-        };
-
         console.log('[API] Stock created', ctx.body)
         ctx.status = 201;
     } catch (error) {
@@ -52,19 +51,31 @@ router.post('stock.create', '/new', async (ctx) => {
     }
 });
 
-router.get('stock.show', '/all', async (ctx) => {
+router.get('stock.show', '/', async (ctx) => {
     try {
-        const page = parseInt(ctx.query.page) || defaultPage;
-        const size = parseInt(ctx.query.size) || defaultSize;
+        // const page = parseInt(ctx.query.page) || defaultPage;
+        // const size = parseInt(ctx.query.size) || defaultSize;
 
-        const startIndex = getStartIndex(page, size);
+        // const startIndex = getStartIndex(page, size);
 
-        const stocks = await ctx.orm.Stock.findAll({
-            offset: startIndex,
-            limit: size,
-        });
-
-        ctx.body = stocks;
+        // const stocks = await ctx.orm.Stocks.findAll({
+        //     offset: startIndex,
+        //     limit: size,
+        // });
+        const latestStocks = {};
+        const companies = await ctx.orm.Company.findAll();
+        for (let k in companies) {
+            const company = companies[k];
+            const companyStocks = await ctx.orm.CompanyStocks.findOne({
+                where: { companyId: company.id },
+            });
+            const latestStock = await ctx.orm.Stocks.findOne({
+                where: { id: companyStocks.stockId },
+                order: [['datetime', 'DESC']],
+            });
+            latestStocks[company.symbol] = latestStock.price;
+        }
+        ctx.body = latestStocks;
         ctx.status = 200;
     } catch (error) {
         console.error(consoleError, error);
@@ -115,5 +126,6 @@ router.get('stock.info', '/info', async (ctx) => {
         ctx.status = 400;
     }
 });
+
 
 module.exports = router;
