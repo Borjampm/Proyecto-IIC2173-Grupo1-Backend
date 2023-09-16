@@ -53,15 +53,6 @@ router.post('stock.create', '/new', async (ctx) => {
 
 router.get('stock.show', '/', async (ctx) => {
     try {
-        // const page = parseInt(ctx.query.page) || defaultPage;
-        // const size = parseInt(ctx.query.size) || defaultSize;
-
-        // const startIndex = getStartIndex(page, size);
-
-        // const stocks = await ctx.orm.Stocks.findAll({
-        //     offset: startIndex,
-        //     limit: size,
-        // });
         const latestStocks = {};
         const companies = await ctx.orm.Company.findAll();
         for (let k in companies) {
@@ -84,40 +75,38 @@ router.get('stock.show', '/', async (ctx) => {
     }
 });
 
-router.get('stock.info', '/info', async (ctx) => {
+router.get('stock.info', '/:symbol', async (ctx) => {
     try {
-        const stocks = await ctx.orm.Stock.findAll();
-        const firstStock = stocks[0];
-        const lastStock = stocks[stocks.length - 1];
+        const page = parseInt(ctx.query.page) || defaultPage;
+        const size = parseInt(ctx.query.size) || defaultSize;
 
-        const symbols = ['AAPL', 'AMZN', 'TSLA', 'MSFT', 'NFLX', 'GOOGL', 'NVDA', 'META', 'WMT', 'SHEL', 'LTMAY', 'COMP', 'MA', 'PG', 'AVGO']
-        let companies = [];
+        const startIndex = getStartIndex(page, size);
 
-        for (index in symbols) {
-            const data = await ctx.orm.Company.findAll({
-                where: {
-                    symbol: symbols[index]
-                }
-            })
-
-            const lastIndex = data.length - 1;
-
-            const company = {
-                name: `${data[0].symbol} - ${data[0].shortName}`,
-                first_price: `${data[0].price} ${data[0].currency}`,
-                last_price: `${data[lastIndex].price} ${data[lastIndex].currency}`,
-                source: data[0].source
+        const company = await ctx.orm.Company.findOne({
+            where: {
+                symbol: ctx.request.params.symbol
             }
-            companies.push(company);
-        }
-
-        const numberOfStocks = await ctx.orm.Stock.count();
-
+        });
+        const companyStocks = await ctx.orm.Stocks.findAll({
+            offset: startIndex,
+            limit: size,
+            include: [{
+                model: ctx.orm.CompanyStocks,
+                required: true,
+                where: { companyId: company.id }
+            }],
+        });
+        let historicDetail = [];
+        companyStocks.map (stock => {
+            historicDetail.push({
+                datetime: stock.datetime,
+                price: stock.price,
+                currency: stock.currency,
+                source: stock.source
+            })
+        })
         ctx.body = {
-            number_of_stocks: numberOfStocks,
-            first_stock: `[ID] ${firstStock.stocks_id} | [DATE] ${firstStock.datetime}`,
-            last_stock: `[ID] ${lastStock.stocks_id} | [DATE] ${lastStock.datetime}`,
-            companies_info: companies
+            history: historicDetail
         }
         ctx.status = 200;
     } catch (error) {
