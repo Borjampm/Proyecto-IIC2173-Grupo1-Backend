@@ -5,7 +5,7 @@ name: Telegram notification
 # Controls when the action will run. Triggers the workflow on pull request
 on:
   pull_request:
-    branches: [ develop ]
+    branches: [ development ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -17,7 +17,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # Runs the telegram notify action to send a notification
       - name: Telegram Notify
