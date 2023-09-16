@@ -11,6 +11,7 @@ router.post('stock.create', '/new', async (ctx) => {
 
         const stocksId = request.stocks_id;
         const datetime = request.datetime;
+        console.log(datetime)
         const stocks = request.stocks;
 
         for (let k in stocks) {
