@@ -32,7 +32,6 @@ function connectToBroker() {
 
     client.on('message', function (topic, message) {
         processedMessage = responseParser(message.toString())
-        console.log(processedMessage)
 
         console.log('[LISTENER]', processedMessage.stocks_id, processedMessage.datetime)
         postResponseInAPI(processedMessage)
