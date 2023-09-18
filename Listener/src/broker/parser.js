@@ -1,39 +1,39 @@
-let { RESPONSE_DICT, COMPANY_DICT, RESPONSE_ALL_KEYS } = require('../parameters/response_values');
+let { 
+    RESPONSE_DICT, COMPANY_DICT, RESPONSE_ALL_KEYS, 
+    RESPONSE_DATETIME, RESPONSE_STOCKS, RESPONSE_ID
+} = require('../parameters/response_values');
+const insertValuesOnDictionary = require('../utils/dictionarys');
 
 const SYMBOLS = ['"', '{', '}', '\\'];
-
-function valuesAsDict(dict, lines, symbols) {
-    for (const line of lines) {
-        const [key, values] = line.split(symbols);
-        dict[key] = values;
-    }
-    return dict;
-}
+const INC_TEXT = ' Inc.';
 
 function parser(dataAsString) {
     let data = dataAsString.split('}');
+
     data = data.filter(line => RESPONSE_ALL_KEYS.some(key => line.includes(key)));
 
-    const stocksIndex = data.findIndex(line => line.includes('stocks_id'));
+    const stocksIndex = data.findIndex(line => line.includes(RESPONSE_ID));
 
     let lines = data[stocksIndex].split(',');
     data.splice(stocksIndex, 1);
     lines = lines.filter(line => RESPONSE_ALL_KEYS.some(key => line.includes(key)));
 
-    RESPONSE_DICT = valuesAsDict(RESPONSE_DICT, removeAllSymbols(lines), ':');
+    RESPONSE_DICT = insertValuesOnDictionary(RESPONSE_DICT, removeAllSymbols(lines), ':');
 
-    data[0] = data[0].replace(`"${'stocks'}":"[`, '');
+    data[0] = data[0].replace(`"${RESPONSE_STOCKS}":"[`, '');
     data = removeAllSymbols(data);
     data = data.map(line => line.split(',').filter(item => item !== ''));
     
     data.forEach((line, index) => {
-        if (line[2] === ' Inc.') {
-            data[index][1] += ',' + ' Inc.';
-            data[index] = data[index].filter(item => item !== ' Inc.');
+        if (line[2] === INC_TEXT) {
+            data[index][1] += ',' + INC_TEXT;
+            data[index] = data[index].filter(item => item !== INC_TEXT);
         }
     });
 
-    RESPONSE_DICT['stocks'] = data.map(line => valuesAsDict({ ...COMPANY_DICT }, line, ':'));
+    RESPONSE_DICT[RESPONSE_STOCKS] = data.map(
+        line => insertValuesOnDictionary({ ...COMPANY_DICT }, line, ':')
+    );
     return RESPONSE_DICT;
 }
 
