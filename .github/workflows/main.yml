@@ -1,1 +1,3 @@
+  - name: GitGuardian Shield Action
+    uses: GitGuardian/ggshield-action@v1.18.1
 

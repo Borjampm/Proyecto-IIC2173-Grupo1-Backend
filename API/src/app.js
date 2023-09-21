@@ -1,9 +1,9 @@
 const koa = require("koa");
 const koaLogger = require("koa-logger");
 const { koaBody } =  require("koa-body");
+const cors = require("@koa/cors");
 const orm = require("./sequelize/models");
 const router = require("./routes.js");
-const cors = require("@koa/cors");
 
 
 const app = new koa();

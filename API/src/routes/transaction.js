@@ -24,16 +24,16 @@ router.post('/buy', async (ctx) => {
             };
             ctx.status = 400;
             return;
-        } else {
+        } 
             user.Wallet -= TotalAmount;
             await user.save();
-        }
+        
         const transaction = await ctx.orm.Transaction.create({
             UserId: user.id,
             CompanyId: company.id,
             Price: request.Price,
             Currency: request.Currency,
-            TotalAmount: TotalAmount,
+            TotalAmount,
             Quantity: request.Quantity,
             Date: new Date().toISOString(),
             Completed: false
