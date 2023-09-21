@@ -1,6 +1,12 @@
 import paho.mqtt.client as mqtt
 import json
 import requests
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+API_URL = os.getenv("API_URL")
+print(API_URL)
 
 # Configuración de las credenciales MQTT
 MQTT_HOST = "broker.legit.capital"
@@ -26,7 +32,7 @@ def on_message(client, userdata, msg):
 def api_request(data):
     print(data)
     print('[Listener-Compras] requesting to api')
-    # api_url = "http://app:8000/add_stocks"
+    api_url = "/add_stocks"
     # response = requests.post(api_url, json=data)
     # if response.status_code == 200:
     #     print("POST request successful!")
