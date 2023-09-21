@@ -10,7 +10,7 @@ MQTT_PASSWORD = "iic2173-2023-2-students"
 
 # Callback que se ejecuta cuando se conecta al broker MQTT
 def on_connect(client, userdata, flags, rc):
-    print(f"Conectado al broker con código: {rc}")
+    print(f"[Listener-Compras] Conectado al broker con código: {rc}")
     client.subscribe("stocks/validation")  # Suscripción a un tópico
 
 # Callback que se ejecuta cuando se recibe un mensaje MQTT
@@ -25,7 +25,7 @@ def on_message(client, userdata, msg):
 
 def api_request(data):
     print(data)
-    print('requesting to api')
+    print('[Listener-Compras] requesting to api')
     # api_url = "http://app:8000/add_stocks"
     # response = requests.post(api_url, json=data)
     # if response.status_code == 200:
