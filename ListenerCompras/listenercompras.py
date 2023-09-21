@@ -17,14 +17,14 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     message_dict = json.loads(msg.payload.decode())
     print(message_dict)
-    # stocks = json.loads(message_dict['stocks'])
-    # message_dict['stocks'] = stocks
-    # api_request(message_dict)
+    validation = json.loads(message_dict)
+    api_request(message_dict)
     # print(message_dict)
 
 
 
 def api_request(data):
+    print(data)
     print('requesting to api')
     # api_url = "http://app:8000/add_stocks"
     # response = requests.post(api_url, json=data)

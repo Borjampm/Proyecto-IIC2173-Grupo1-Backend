@@ -26,10 +26,13 @@ services:
     volumes:
       - ./ListenerCompras:/ListenerCompras
     ports:
-      - 1884:1884
+      - "${PORT_COMPRAS}:${PORT_COMPRAS}"
     # networks:
     #   - app-network
     restart: always
+    environment:
+      PORT_COMPRAS: ${PORT_COMPRAS}
+      API_URL: ${API_URL}
 
   api:
     build:
