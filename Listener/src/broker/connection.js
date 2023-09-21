@@ -1,7 +1,7 @@
 const mqtt = require('mqtt')
 const axios = require('axios')
 const loadCredentials = require('./credentials')
-const responseParser = require('./response/parser')
+const responseParser = require('./parser')
 
 const API_URL = process.env.API_URL;
 
