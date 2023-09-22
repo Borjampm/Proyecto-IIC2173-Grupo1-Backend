@@ -43,7 +43,26 @@ router.post('/buy', async (ctx) => {
         ctx.body = error;
         ctx.status = 400;
     }
-}); 
+});
+
+// Post para actualizar una órden de compra
+router.post('/validate', async (ctx) => {
+    try {
+        const request = ctx.request.body;
+        const transaction = await ctx.orm.Transaction.findOne({
+            where: {
+                id: request.request_id
+            }
+        });
+        transaction.Completed = true;
+        await transaction.save();
+        ctx.body = transaction;
+    } catch (error) {
+        ctx.body = error;
+        ctx.status = 400;
+    }
+});
+
 
 
 
