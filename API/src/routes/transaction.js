@@ -54,7 +54,10 @@ router.post('/validate', async (ctx) => {
                 id: request.request_id
             }
         });
-        transaction.Completed = true;
+        if (request.valid) {
+            transaction.Completed = true;
+        } else {
+            transaction.Completed = false;}
         await transaction.save();
         ctx.body = transaction;
     } catch (error) {
