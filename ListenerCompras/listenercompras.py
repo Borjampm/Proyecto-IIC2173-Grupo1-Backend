@@ -24,7 +24,8 @@ def on_message(client, userdata, msg):
     message_dict = json.loads(msg.payload.decode())
     print(message_dict)
     validation = json.loads(message_dict)
-    api_request(message_dict)
+    if validation["group_id"] == "1":
+        api_request(message_dict)
     # print(message_dict)
 
 
@@ -32,15 +33,15 @@ def on_message(client, userdata, msg):
 def api_request(data):
     print(data)
     print('[Listener-Compras] requesting to api')
-    api_url = "/add_stocks"
-    # response = requests.post(api_url, json=data)
-    # if response.status_code == 200:
-    #     print("POST request successful!")
-    #     print("Response:", response.text)
-    # else:
-    #     print("POST request failed!")
-    #     print("Status Code:", response.status_code)
-    #     print("Response:", response.text)
+    api_url = "/transactions/validate"
+    response = requests.post(api_url, json=data)
+    if response.status_code == 200:
+        print("POST request successful!")
+        print("Response:", response.text)
+    else:
+        print("POST request failed!")
+        print("Status Code:", response.status_code)
+        print("Response:", response.text)
 
 # Configuración y conexión del cliente MQTT
 mqtt_client = mqtt.Client()
