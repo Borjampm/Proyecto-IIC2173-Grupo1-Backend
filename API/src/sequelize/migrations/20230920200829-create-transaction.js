@@ -9,11 +9,11 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4
       },
-      UserId:{
-        type: Sequelize.INTEGER,
+      Username:{
+        type: Sequelize.STRING,
         references: {
           model: 'Users',
-          key: 'id'}
+          key: 'Username'}
       },
       CompanyId:{
         type: Sequelize.INTEGER,

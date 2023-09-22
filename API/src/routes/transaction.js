@@ -29,7 +29,7 @@ router.post('/buy', async (ctx) => {
             await user.save();
         }
         const transaction = await ctx.orm.Transaction.create({
-            UserId: user.id,
+            Username: user.Username,
             CompanyId: company.id,
             Price: request.Price,
             Currency: request.Currency,
@@ -40,6 +40,7 @@ router.post('/buy', async (ctx) => {
         });
         ctx.body = transaction;
     } catch (error) {
+        console.log(error)
         ctx.body = error;
         ctx.status = 400;
     }
