@@ -1,4 +1,5 @@
 const Router = require('koa-router');
+const { Op } = require('sequelize');
 const { consoleError, generalError, stock404 } = require('../parameters/errors.js');
 
 const router = new Router();
@@ -31,6 +32,28 @@ router.post('/addfunds', async (ctx) => {
     }
     catch (error) {
         console.log(error, "error")
+        ctx.body = generalError;
+        ctx.status = 400;
+    }
+});
+
+router.get('user.finInfo', '/:username', async (ctx) => {
+    try {
+
+        const user = await ctx.orm.User.findOne({
+            where: {
+              Username: {
+                [Op.iLike]: `%${ctx.params.username}%`
+              }
+            }
+          });
+
+        ctx.body = {
+            stocks_data: user
+        }
+        ctx.status = 200;
+    } catch (error) {
+        console.error(consoleError, error);
         ctx.body = generalError;
         ctx.status = 400;
     }
