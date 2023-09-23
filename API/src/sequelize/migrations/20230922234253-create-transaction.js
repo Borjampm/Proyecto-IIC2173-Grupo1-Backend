@@ -5,21 +5,18 @@ module.exports = {
     await queryInterface.createTable('Transactions', {
       id: {
         allowNull: false,
+        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4
+        type: Sequelize.INTEGER
       },
-      Username:{
-        type: Sequelize.STRING,
-        references: {
-          model: 'Users',
-          key: 'Username'}
+      id: {
+        type: Sequelize.UUID
       },
-      CompanyId:{
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'Companies',
-          key: 'id'}
+      Username: {
+        type: Sequelize.STRING
+      },
+      CompanyId: {
+        type: Sequelize.INTEGER
       },
       Quantity: {
         type: Sequelize.INTEGER
@@ -38,6 +35,12 @@ module.exports = {
       },
       Completed: {
         type: Sequelize.BOOLEAN
+      },
+      ipAdress: {
+        type: Sequelize.STRING
+      },
+      UserId: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,

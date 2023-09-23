@@ -36,7 +36,10 @@ router.post('/buy', async (ctx) => {
             TotalAmount: TotalAmount,
             Quantity: request.Quantity,
             Date: new Date().toISOString(),
-            Completed: false
+            Completed: false,
+            ipAdress: request.ipAdress,
+            UserId: 1
+
         });
         ctx.body = transaction;
     } catch (error) {

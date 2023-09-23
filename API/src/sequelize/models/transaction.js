@@ -28,7 +28,9 @@ module.exports = (sequelize, DataTypes) => {
     Currency: DataTypes.STRING,
     TotalAmount: DataTypes.FLOAT,
     Date: DataTypes.STRING,
-    Completed: DataTypes.BOOLEAN
+    Completed: DataTypes.BOOLEAN,
+    ipAdress: DataTypes.STRING,
+    UserId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Transaction',

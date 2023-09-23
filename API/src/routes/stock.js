@@ -30,7 +30,7 @@ router.post('stock.create', '/new', async (ctx) => {
             }
 
             // create stock
-            let newStock = await ctx.orm.Stocks.create({
+            let newStock = await ctx.orm.Stock.create({
                 stocksId: stocksId,
                 datetime: datetime,
                 price: stocks[k].price,
@@ -38,7 +38,7 @@ router.post('stock.create', '/new', async (ctx) => {
                 source: stocks[k].source
             })
             // associate stock with company
-            await ctx.orm.CompanyStocks.create({
+            await ctx.orm.CompanyStock.create({
                 companyId: company.id,
                 stockId: newStock.id
         })
@@ -58,10 +58,10 @@ router.get('stock.show', '/', async (ctx) => {
         const companies = await ctx.orm.Company.findAll();
         for (let k in companies) {
             const company = companies[k];
-            const companyStocks = await ctx.orm.CompanyStocks.findOne({
+            const companyStocks = await ctx.orm.CompanyStock.findOne({
                 where: { companyId: company.id },
             });
-            const latestStock = await ctx.orm.Stocks.findOne({
+            const latestStock = await ctx.orm.Stock.findOne({
                 where: { id: companyStocks.stockId },
                 order: [['datetime', 'DESC']],
             });
@@ -88,11 +88,11 @@ router.get('stock.info', '/:symbol', async (ctx) => {
                 symbol: ctx.request.params.symbol
             }
         });
-        const companyStocks = await ctx.orm.Stocks.findAll({
+        const companyStocks = await ctx.orm.Stock.findAll({
             offset: startIndex,
             limit: size,
             include: [{
-                model: ctx.orm.CompanyStocks,
+                model: ctx.orm.CompanyStock,
                 required: true,
                 where: { companyId: company.id }
             }],
