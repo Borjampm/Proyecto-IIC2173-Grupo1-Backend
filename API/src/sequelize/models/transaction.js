@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.User, {foreignKey: 'UserId'});
+      this.belongsTo(models.User, {foreignKey: 'Username'});
       this.belongsTo(models.Company, {foreignKey: 'CompanyId'});
     }
   }
@@ -21,14 +21,16 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4
     },
-    UserId: DataTypes.INTEGER,
+    Username: DataTypes.STRING,
     CompanyId: DataTypes.INTEGER,
     Quantity: DataTypes.INTEGER,
     Price: DataTypes.FLOAT,
     Currency: DataTypes.STRING,
     TotalAmount: DataTypes.FLOAT,
     Date: DataTypes.STRING,
-    Completed: DataTypes.BOOLEAN
+    Completed: DataTypes.BOOLEAN,
+    ipAdress: DataTypes.STRING,
+    UserId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Transaction',

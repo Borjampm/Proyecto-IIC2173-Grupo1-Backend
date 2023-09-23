@@ -9,17 +9,11 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4
       },
-      UserId:{
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'Users',
-          key: 'id'}
+      Username: {
+        type: Sequelize.STRING
       },
-      CompanyId:{
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'Companies',
-          key: 'id'}
+      CompanyId: {
+        type: Sequelize.INTEGER
       },
       Quantity: {
         type: Sequelize.INTEGER
@@ -38,6 +32,12 @@ module.exports = {
       },
       Completed: {
         type: Sequelize.BOOLEAN
+      },
+      ipAdress: {
+        type: Sequelize.STRING
+      },
+      UserId: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,

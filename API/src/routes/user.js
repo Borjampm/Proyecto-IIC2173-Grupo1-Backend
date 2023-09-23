@@ -7,9 +7,11 @@ const router = new Router();
 // Falta agregar las validaciones correspondientes
 router.post('/signup', async (ctx) => {
     try {
+        console.log(ctx.request.body, "bodybody body")
         const user = await ctx.orm.User.create(ctx.request.body);
         ctx.body = user;
     } catch (error) {
+        console.log(error)
         ctx.body = generalError;
         ctx.status = 400;
     }
@@ -18,6 +20,7 @@ router.post('/signup', async (ctx) => {
 // Post para agregar dinero a la billetera
 router.post('/addfunds', async (ctx) => {
     try {
+        console.log(ctx.request.body, "bodybody body")
         const user = await ctx.orm.User.findOne({ where: { Username: ctx.request.body.Username } });
         if (user) {
             user.Wallet += ctx.request.body.Funds;
@@ -26,6 +29,7 @@ router.post('/addfunds', async (ctx) => {
         }
     }
     catch (error) {
+        console.log(error, "error")
         ctx.body = generalError;
         ctx.status = 400;
     }

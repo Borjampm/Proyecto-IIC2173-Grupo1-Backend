@@ -29,17 +29,21 @@ router.post('/buy', async (ctx) => {
             await user.save();
         }
         const transaction = await ctx.orm.Transaction.create({
-            UserId: user.id,
+            Username: user.Username,
             CompanyId: company.id,
             Price: request.Price,
             Currency: request.Currency,
             TotalAmount: TotalAmount,
             Quantity: request.Quantity,
             Date: new Date().toISOString(),
-            Completed: false
+            Completed: false,
+            ipAdress: request.ipAdress,
+            UserId: 1
+
         });
         ctx.body = transaction;
     } catch (error) {
+        console.log(error)
         ctx.body = error;
         ctx.status = 400;
     }
