@@ -4,6 +4,7 @@ import requests
 from dotenv import load_dotenv
 import os
 
+
 load_dotenv()
 API_URL = os.getenv("API_URL")
 print(API_URL)
@@ -22,18 +23,20 @@ def on_connect(client, userdata, flags, rc):
 # Callback que se ejecuta cuando se recibe un mensaje MQTT
 def on_message(client, userdata, msg):
     message_dict = json.loads(msg.payload.decode())
-    print(message_dict)
-    validation = json.loads(message_dict)
-    if validation["group_id"] == "1":
+    print(message_dict, "msg")
+    # validation = json.loads(message_dict)
+    if message_dict['group_id'] == 1:
+        print("hola")
         api_request(message_dict)
     # print(message_dict)
 
 
 
 def api_request(data):
-    print(data)
+    print(data, "data")
+
     print('[Listener-Compras] requesting to api')
-    api_url = "/transactions/validate"
+    api_url = "http://localhost:8000/transactions/validate"
     response = requests.post(api_url, json=data)
     if response.status_code == 200:
         print("POST request successful!")

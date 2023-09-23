@@ -15,7 +15,9 @@
     "nodemon": "^3.0.1",
     "pg": "^8.11.3",
     "sequelize": "^6.32.1",
-    "sequelize-cli": "^6.6.1"
+    "sequelize-cli": "^6.6.1",
+    "axios": "^1.5.0",
+    "mqtt": "^5.0.3"
   },
   "scripts": {
     "api": "nodemon src/index.js"
