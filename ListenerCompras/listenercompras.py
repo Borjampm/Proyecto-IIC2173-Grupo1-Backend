@@ -36,7 +36,8 @@ def api_request(data):
     print(data, "data")
 
     print('[Listener-Compras] requesting to api')
-    api_url = "http://localhost:8000/transactions/validate"
+    api_url = API_URL + "/transactions/validate"
+    print(api_url)
     response = requests.post(api_url, json=data)
     if response.status_code == 200:
         print("POST request successful!")
@@ -44,7 +45,7 @@ def api_request(data):
     else:
         print("POST request failed!")
         print("Status Code:", response.status_code)
-        print("Response:", response.text)
+        print("Response listener:", response)
 
 # Configuración y conexión del cliente MQTT
 mqtt_client = mqtt.Client()
