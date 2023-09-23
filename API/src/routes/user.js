@@ -23,7 +23,8 @@ router.post('/addfunds', async (ctx) => {
         console.log(ctx.request.body, "bodybody body")
         const user = await ctx.orm.User.findOne({ where: { Username: ctx.request.body.Username } });
         if (user) {
-            user.Wallet += ctx.request.body.Funds;
+            user.Wallet = parseFloat(user.Wallet) + parseFloat(ctx.request.body.Funds);
+            // user.Wallet += parseFloat(ctx.request.body.Funds);
             await user.save();
             ctx.body = user;
         }
