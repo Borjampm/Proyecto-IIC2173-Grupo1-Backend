@@ -43,6 +43,7 @@ router.post('/buy', async (ctx) => {
             }
         });
         const TotalAmount = request.Price * request.Quantity;
+        console.log("TOTAL AMOUNT", TotalAmount)
         if (user.Wallet < TotalAmount) {
             ctx.body = {
                 message: "You don't have enough money to buy this stock"
@@ -72,10 +73,10 @@ router.post('/buy', async (ctx) => {
             const message = {
               request_id: transaction.id,
               group_id: '1',
-              symbol: 'AAPL',
-              datetime: 'hola',
+              symbol: company.symbol,
+              datetime: transaction.date,
               deposit_token: '',
-              quantity: 10,
+              quantity: transaction.Quantity,
               seller: 0,
             };
             const payload = JSON.stringify(message);
@@ -112,6 +113,7 @@ router.post('/buy', async (ctx) => {
 // Post para actualizar una órden de compra
 router.post('/validate', async (ctx) => {
     try {
+        console.log("VALIDATING")
         const request = ctx.request.body;
         const transaction = await ctx.orm.Transaction.findOne({
             where: {
@@ -119,8 +121,10 @@ router.post('/validate', async (ctx) => {
             }
         });
         if (request.valid) {
+            console.log("ES VALIDO")
             transaction.Completed = true;
         } else {
+            console.log("NO ES VALIDO")
             transaction.Completed = false;}
         await transaction.save();
         ctx.body = transaction;
