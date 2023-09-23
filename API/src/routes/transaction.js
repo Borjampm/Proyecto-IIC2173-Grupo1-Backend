@@ -59,7 +59,7 @@ router.post('/buy', async (ctx) => {
             Username: user.Username,
             CompanyId: company.id,
             Price: request.Price,
-            Currency: request.Currency,
+            Currency: "USD",
             TotalAmount: TotalAmount,
             Quantity: request.Quantity,
             Date: new Date().toISOString(),
@@ -70,7 +70,7 @@ router.post('/buy', async (ctx) => {
         });
         try {
             const message = {
-              request_id: 'be0e538d-c983-43e8-957b-391746eb4236',
+              request_id: transaction.id,
               group_id: '1',
               symbol: 'AAPL',
               datetime: 'hola',
@@ -125,6 +125,7 @@ router.post('/validate', async (ctx) => {
         await transaction.save();
         ctx.body = transaction;
     } catch (error) {
+        console.log(error, "error api")
         ctx.body = error;
         ctx.status = 400;
     }

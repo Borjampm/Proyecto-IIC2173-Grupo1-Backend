@@ -23,6 +23,8 @@ services:
       context: ./ListenerCompras
       dockerfile: Dockerfile
     command: bash -c "python3 listenercompras.py"
+    networks:
+      - back-network
     volumes:
       - ./ListenerCompras:/ListenerCompras
     ports:
