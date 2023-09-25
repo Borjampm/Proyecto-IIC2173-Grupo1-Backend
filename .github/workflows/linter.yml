@@ -23,9 +23,3 @@ jobs:
 
     - name: Lint with yarn
       run: yarn lint
-
-    - name: Dummy Action
-      run: echo "Hello, world!"
-
-    # - name: Run automation script
-    #   run: ./scripts/automation.sh
