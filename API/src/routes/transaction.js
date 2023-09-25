@@ -48,52 +48,49 @@ router.post('/buy', async (ctx) => {
             ctx.body = {
                 message: "You don't have enough money to buy this stock"
             };
-            ctx.status = 400;
-            return;
+            ctx.status = 200;
         } else {
             console.log("buiiiiing")
             user.Wallet -= TotalAmount;
             await user.save();
+            const transaction = await ctx.orm.Transaction.create({
+                Username: user.Username,
+                CompanyId: company.id,
+                Price: request.Price,
+                Currency: "USD",
+                TotalAmount: TotalAmount,
+                Quantity: request.Quantity,
+                Date: new Date().toISOString(),
+                Completed: false,
+                ipAdress: request.IPAddres,
+                UserId: 1
 
-        }
-        const transaction = await ctx.orm.Transaction.create({
-            Username: user.Username,
-            CompanyId: company.id,
-            Price: request.Price,
-            Currency: "USD",
-            TotalAmount: TotalAmount,
-            Quantity: request.Quantity,
-            Date: new Date().toISOString(),
-            Completed: false,
-            ipAdress: request.IPAddres,
-            UserId: 1
+            });
+            try {
+                const message = {
+                request_id: transaction.id,
+                group_id: '1',
+                symbol: company.symbol,
+                datetime: transaction.date,
+                deposit_token: '',
+                quantity: transaction.Quantity,
+                seller: 0,
+                };
+                const payload = JSON.stringify(message);
 
-        });
-        try {
-            const message = {
-              request_id: transaction.id,
-              group_id: '1',
-              symbol: company.symbol,
-              datetime: transaction.date,
-              deposit_token: '',
-              quantity: transaction.Quantity,
-              seller: 0,
-            };
-            const payload = JSON.stringify(message);
-        
-            
-        
-            // Publish the message to the MQTT topic
-            client.publish(topic, payload);
-            console.log("works?")
-        
+                // Publish the message to the MQTT topic
+                client.publish(topic, payload);
+                console.log("works?")
+            } catch (error) {
+                console.error('Error publishing MQTT message:', error);
+                ctx.status = 500;
+                ctx.body = { error: 'Failed to publish MQTT message' };
+            }
+
             ctx.status = 200;
             ctx.body = { message: 'MQTT message published successfully' };
-          } catch (error) {
-            console.error('Error publishing MQTT message:', error);
-            ctx.status = 500;
-            ctx.body = { error: 'Failed to publish MQTT message' };
-          }
+            ctx.body = transaction;
+        }
         // axios
         //     .post('localhost:1313/publish-mqtt-message/', postData)
         //     .then((response) => {
@@ -102,7 +99,6 @@ router.post('/buy', async (ctx) => {
         //     .catch((error) => {
         //         console.error('Error publishing message:', error);
         // });
-        ctx.body = transaction;
     } catch (error) {
         console.log(error)
         ctx.body = error;
@@ -158,7 +154,7 @@ router.get('transiction.user', '/:username', async (ctx) => {
             TotalAmount: transactions.TotalAmount,
             Completed: transactions.Completed
         }));
-        
+
         ctx.body = {
             stocks_data: list
         }
