@@ -29,29 +29,10 @@ services:
       - ./ListenerCompras:/ListenerCompras
     ports:
       - "${PORT_COMPRAS}:${PORT_COMPRAS}"
-    # networks:
-    #   - app-network
     restart: always
     environment:
       PORT_COMPRAS: ${PORT_COMPRAS}
       API_URL: ${API_URL}
-
-  # publisher-compras:
-  #   container_name: Publisher-Compras
-  #   build:
-  #     context: ./PublisherCompras
-  #     dockerfile: Dockerfile
-  #   command: bash -c "python3 publishercompras.py"
-  #   volumes:
-  #     - ./PublisherCompras:/PublisherCompras
-  #   ports:
-  #     - "${PORT_PUBLISHER}:${PORT_PUBLISHER}"
-  #   # networks:
-  #   #   - app-network
-  #   restart: always
-  #   environment:
-  #     PORT_PUBLISHER: ${PORT_PUBLISHER}
-  #     API_URL: ${API_URL}
 
   api:
     build:
@@ -74,6 +55,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
       DB_HOST: ${DB_HOST}
+      FRONT_URL: ${FRONT_URL}
 
   db:
     image: postgres:latest
