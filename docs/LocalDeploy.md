@@ -51,7 +51,7 @@ En el directorio base del repositorio del Front se encuentra un archivo `config.
         //Auth0 Config Params
         const DOMAIN = "dev-ju2sb7gpzdrwv31f.us.auth0.com";
         const CLIENT_ID = "Ss50jxHUP31QbXzYJHn2NHOiDP5CFrOP";
-        const REDIRECT_URI = ${FRONT_PROXY}/my-profile/;
+        const REDIRECT_URI = `${FRONT_PROXY}/my-profile/`;
         const SCOPE = "openid profile email logins_count";
 
         export { FRONT_PROXY, API_URL, DOMAIN, CLIENT_ID, REDIRECT_URI, SCOPE };
@@ -65,7 +65,7 @@ Se debe cambiar la constante `FRONT_PROXY` y la constante `APi_URL` a lo mismo q
         //Auth0 Config Params
         const DOMAIN = "dev-ju2sb7gpzdrwv31f.us.auth0.com";
         const CLIENT_ID = "Ss50jxHUP31QbXzYJHn2NHOiDP5CFrOP";
-        const REDIRECT_URI = ${FRONT_PROXY}/my-profile/;
+        const REDIRECT_URI = `${FRONT_PROXY}/my-profile/`;
         const SCOPE = "openid profile email logins_count";
 
         export { FRONT_PROXY, API_URL, DOMAIN, CLIENT_ID, REDIRECT_URI, SCOPE };
