@@ -15,11 +15,11 @@ jobs:
       with:
         node-version: '18'
 
-    # - name: Install dependencies
-    #   run: npm ci
+    - name: Install dependencies
+      run: yarn install
 
-    # - name: Lint with npm
-    #   run: npm run lint
+    - name: Lint with yarn
+      run: yarn lint
 
     - name: Dummy Action
       run: echo "Hello, world!"
