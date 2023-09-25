@@ -1,6 +1,6 @@
 const Router = require('koa-router');
 const { Op } = require('sequelize');
-const { consoleError, generalError, company404 } = require('../parameters/errors.js');
+const { consoleError, generalError } = require('../parameters/errors.js');
 const { defaultPage, defaultSize } = require('../parameters/request.js');
 const { getStartIndex } = require('../utils/request.js');
 
@@ -63,7 +63,7 @@ router.get('company.symbol', '/:symbol/data', async (ctx) => {
             price: company.price,
             currency: company.currency,
         }));
-        
+
         ctx.body = {
             symbol,
             shortName,

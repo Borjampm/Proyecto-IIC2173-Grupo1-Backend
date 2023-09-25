@@ -1,10 +1,9 @@
 const Router = require('koa-router');
+const mqtt = require('mqtt');
 const { Op } = require('sequelize');
 const { consoleError, generalError } = require('../parameters/errors.js');
-const axios = require('axios');
 
 const router = new Router();
-const mqtt = require('mqtt');
 
 const topic = 'stocks/requests';
 
@@ -145,15 +144,15 @@ router.get('transiction.user', '/:username', async (ctx) => {
             }
           });
 
-        const list = transactions.map((transactions) => ({
-            id: transactions.id,
-            Username: transactions.Username,
-            CompanyId: transactions.CompanyId,
-            Quantity: transactions.Quantity,
-            Price: transactions.Price,
-            Currency: transactions.Currency,
-            TotalAmount: transactions.TotalAmount,
-            Completed: transactions.Completed
+        const list = transactions.map((trans) => ({
+            id: trans.id,
+            Username: trans.Username,
+            CompanyId: trans.CompanyId,
+            Quantity: trans.Quantity,
+            Price: trans.Price,
+            Currency: trans.Currency,
+            TotalAmount: trans.TotalAmount,
+            Completed: trans.Completed
         }));
 
         ctx.body = {

@@ -1,7 +1,7 @@
 const Router = require('koa-router');
-const { consoleError, generalError, stock404 } = require('../parameters/errors.js');
+const { consoleError, generalError } = require('../parameters/errors.js');
 const { defaultPage, defaultSize } = require('../parameters/request.js');
-const { getStartIndex, getEndIndex } = require('../utils/request.js');
+const { getStartIndex } = require('../utils/request.js');
 
 const router = new Router();
 
