@@ -5,12 +5,13 @@ const orm = require("./sequelize/models");
 const router = require("./routes.js");
 const cors = require("@koa/cors");
 
+const FRONT_URL = process.env.FRONT_URL;
 
 const app = new koa();
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: FRONT_URL,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true, // Enable cookies and credentials for cross-origin requests if needed
+    credentials: true, 
   }));
 
 app.context.orm = orm;

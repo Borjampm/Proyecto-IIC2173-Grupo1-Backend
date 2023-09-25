@@ -1,4 +1,3 @@
-
 const app = require('./app');
 const db = require('./sequelize/models');
 
@@ -17,4 +16,4 @@ db.sequelize
      return app;
    });
  })
- .catch((err) => console.error('Unable to connect to the database:', err));
+ .catch((err) => console.error('[API] Unable to connect to the database:', err));
