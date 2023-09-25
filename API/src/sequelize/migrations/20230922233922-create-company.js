@@ -9,22 +9,10 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      symbol: {
-        type: Sequelize.STRING
-      },
       shortName: {
         type: Sequelize.STRING
       },
-      price: {
-        type: Sequelize.STRING
-      },
-      currency: {
-        type: Sequelize.STRING
-      },
-      source: {
-        type: Sequelize.STRING
-      },
-      stockId: {
+      symbol: {
         type: Sequelize.STRING
       },
       createdAt: {
