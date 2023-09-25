@@ -1,6 +1,6 @@
 const Router = require('koa-router');
 const { Op } = require('sequelize');
-const { consoleError, generalError, company404 } = require('../parameters/errors.js');
+const { consoleError, generalError } = require('../parameters/errors.js');
 const { defaultPage, defaultSize } = require('../parameters/request.js');
 const { getStartIndex } = require('../utils/request.js');
 
@@ -53,9 +53,9 @@ router.get('company.symbol', '/:symbol/data', async (ctx) => {
             limit: size
           });
 
-        const symbol = companies[0].symbol;
-        const shortName = companies[0].shortName;
-        const source = companies[0].source;
+        const {symbol} = companies[0];
+        const {shortName} = companies[0];
+        const {source} = companies[0];
 
         const list = companies.map((company) => ({
             id: company.id,
@@ -63,11 +63,11 @@ router.get('company.symbol', '/:symbol/data', async (ctx) => {
             price: company.price,
             currency: company.currency,
         }));
-        
+
         ctx.body = {
-            symbol: symbol,
-            shortName: shortName,
-            source: source,
+            symbol,
+            shortName,
+            source,
             stocks_data: list
         }
         ctx.status = 200;

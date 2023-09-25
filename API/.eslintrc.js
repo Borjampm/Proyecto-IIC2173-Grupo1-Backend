@@ -22,5 +22,13 @@ module.exports = {
           devDependencies: ["**/*.test.js"],
         },
       ],
+      "no-await-in-loop": "off",
+      "import/extensions": "off",
+      "import/no-dynamic-require": "off",
+      "import/no-unresolved": "off",
+      "radix": "off",
+      "no-restricted-syntax": "off",
+      "guard-for-in": "off",
+      "array-callback-return": "off"
     },
   };
