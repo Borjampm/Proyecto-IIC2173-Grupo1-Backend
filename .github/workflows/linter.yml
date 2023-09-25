@@ -1,0 +1,28 @@
+name:  Lint Workflow
+
+on: [pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    # - name: Install dependencies
+    #   run: npm ci
+
+    # - name: Lint with npm
+    #   run: npm run lint
+
+    - name: Dummy Action
+      run: echo "Hello, world!"
+
+    - name: Run automation script
+      run: ./scripts/automation.sh
