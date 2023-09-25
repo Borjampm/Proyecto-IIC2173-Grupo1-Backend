@@ -53,9 +53,9 @@ router.get('company.symbol', '/:symbol/data', async (ctx) => {
             limit: size
           });
 
-        const symbol = companies[0].symbol;
-        const shortName = companies[0].shortName;
-        const source = companies[0].source;
+        const {symbol} = companies[0];
+        const {shortName} = companies[0];
+        const {source} = companies[0];
 
         const list = companies.map((company) => ({
             id: company.id,
@@ -65,9 +65,9 @@ router.get('company.symbol', '/:symbol/data', async (ctx) => {
         }));
         
         ctx.body = {
-            symbol: symbol,
-            shortName: shortName,
-            source: source,
+            symbol,
+            shortName,
+            source,
             stocks_data: list
         }
         ctx.status = 200;

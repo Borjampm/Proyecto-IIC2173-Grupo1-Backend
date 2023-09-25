@@ -1,7 +1,8 @@
 const Router = require('koa-router');
 const { Op } = require('sequelize');
-const { consoleError, generalError, stock404 } = require('../parameters/errors.js');
+const { consoleError, generalError } = require('../parameters/errors.js');
 const axios = require('axios');
+
 const router = new Router();
 const mqtt = require('mqtt');
 
@@ -58,7 +59,7 @@ router.post('/buy', async (ctx) => {
                 CompanyId: company.id,
                 Price: request.Price,
                 Currency: "USD",
-                TotalAmount: TotalAmount,
+                TotalAmount,
                 Quantity: request.Quantity,
                 Date: new Date().toISOString(),
                 Completed: false,
