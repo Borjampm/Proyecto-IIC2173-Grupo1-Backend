@@ -11,7 +11,7 @@ const app = new koa();
 app.use(cors({
     origin: FRONT_URL,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true, // Enable cookies and credentials for cross-origin requests if needed
+    credentials: true, 
   }));
 
 app.context.orm = orm;
