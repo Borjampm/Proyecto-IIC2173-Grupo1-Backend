@@ -9,9 +9,10 @@ const FRONT_URL = process.env.FRONT_URL;
 
 const app = new koa();
 app.use(cors({
-    origin: FRONT_URL,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true, 
+    origin: '*',
+    methods: '*',
+    allowHeaders: '*',
+    credentials: true,
   }));
 
 app.context.orm = orm;
