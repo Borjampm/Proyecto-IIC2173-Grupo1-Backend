@@ -1,7 +1,7 @@
 const Router = require('koa-router');
-const { consoleError, generalError, stock404 } = require('../parameters/errors.js');
+const { consoleError, generalError } = require('../parameters/errors.js');
 const { defaultPage, defaultSize } = require('../parameters/request.js');
-const { getStartIndex, getEndIndex } = require('../utils/request.js');
+const { getStartIndex } = require('../utils/request.js');
 
 const router = new Router();
 
@@ -10,11 +10,11 @@ router.post('stock.create', '/new', async (ctx) => {
         const request = ctx.request.body
 
         const stocksId = request.stocks_id;
-        const datetime = request.datetime;
+        const {datetime} = request;
         console.log(datetime)
-        const stocks = request.stocks;
+        const {stocks} = request;
 
-        for (let k in stocks) {
+        for (const k in stocks) {
             // find if company exists
             let company = await ctx.orm.Company.findOne({
                 where: {
@@ -30,9 +30,9 @@ router.post('stock.create', '/new', async (ctx) => {
             }
 
             // create stock
-            let newStock = await ctx.orm.Stock.create({
-                stocksId: stocksId,
-                datetime: datetime,
+            const newStock = await ctx.orm.Stock.create({
+                stocksId,
+                datetime,
                 price: stocks[k].price,
                 currency: stocks[k].currency,
                 source: stocks[k].source
@@ -56,7 +56,7 @@ router.get('stock.show', '/', async (ctx) => {
     try {
         const latestStocks = {};
         const companies = await ctx.orm.Company.findAll();
-        for (let k in companies) {
+        for (const k in companies) {
             const company = companies[k];
             const companyStocks = await ctx.orm.CompanyStock.findOne({
                 where: { companyId: company.id },
@@ -97,7 +97,7 @@ router.get('stock.info', '/:symbol', async (ctx) => {
                 where: { companyId: company.id }
             }],
         });
-        let historicDetail = [];
+        const historicDetail = [];
         companyStocks.map (stock => {
             historicDetail.push({
                 datetime: stock.datetime,

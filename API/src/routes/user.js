@@ -1,6 +1,6 @@
 const Router = require('koa-router');
 const { Op } = require('sequelize');
-const { consoleError, generalError, stock404 } = require('../parameters/errors.js');
+const { consoleError, generalError } = require('../parameters/errors.js');
 
 const router = new Router();
 
