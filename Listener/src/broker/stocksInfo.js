@@ -1,4 +1,4 @@
-const responseParser = require('./utils/parser')
+const responseParser = require('../utils/parser')
 const axios = require('axios')
 
 const topic = 'stocks/info'

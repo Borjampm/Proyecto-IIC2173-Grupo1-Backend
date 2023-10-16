@@ -13,4 +13,4 @@ else
     echo "[API] Migrations already ran"
 fi
 
-yarn api
+yarn start
