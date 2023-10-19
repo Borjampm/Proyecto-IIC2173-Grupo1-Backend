@@ -1,9 +1,9 @@
 const mqtt = require('mqtt')
 const loadCredentials = require('../parameters/credentials')
-const { suscribeInfo, listenStocks } = require('./stocksInfo')
+const { listenStocks } = require('./stocksInfo')
+const { listenValidation } = require('./stocksValidation')
 
 const credentials = loadCredentials()
-const API_URL = process.env.API_URL;
 const URL = `mqtt://${credentials.HOST}:${credentials.PORT}`
 
 const options = {
@@ -14,17 +14,30 @@ const options = {
 }
 
 function connectToBroker() {
-    const client = mqtt.connect(URL, options)
+    const client = mqtt.connect(URL, options);
 
-    connectStocksInfo(client)    
+    client.on('connect', function () {  
+        suscribe(URL, client, 'stocks/info');
+        suscribe(URL, client, 'stocks/validation');
+    })
+
+    client.on('message', function (topic, message) {
+        console.log(`[LISTENER ${topic}] Message received`)
+        if (topic === 'stocks/info') {
+            listenStocks(topic, message, URL);
+        } else {
+            listenValidation(topic, message, URL);
+        }
+    })
 }
 
-function connectStocksInfo(client) {
-    client.on('connect', function () {
-        suscribeInfo(URL, client)
-    })
-    client.on('message', function () {
-        listenStocks(message, url)
+function suscribe(url, client, topic) {
+    console.log(`[LISTENER ${topic}] Connected to`, url)
+
+    client.subscribe(topic, function (err) {
+        if (err) {
+            console.log(`[LISTENER ${topic}]`, err)
+        }
     })
 }
 

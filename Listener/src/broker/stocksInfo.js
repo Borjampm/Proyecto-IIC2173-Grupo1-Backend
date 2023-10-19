@@ -1,26 +1,18 @@
 const responseParser = require('../utils/parser')
 const axios = require('axios')
 
-const topic = 'stocks/info'
+const API_URL = process.env.API_URL;
 
-function suscribeInfo(url, client) {
-    console.log('[LISTENER stock/info] Connected to', url, topic)
-
-    client.subscribe(topic, function (err) {
-        if (err) {
-            console.log(err)
-        }
-    })
-}
-
-function listenStocks(topic, message, url) {
+function listenStocks(topic, message) {
     processedMessage = responseParser(message.toString())
 
-    console.log('[LISTENER stock/info]', processedMessage.stocks_id, processedMessage.datetime)
-    postResponseInAPI(processedMessage, )
+    if(processedMessage.stocks_id != undefined) {
+        console.log(`[LISTENER ${topic}]`, processedMessage.stocks_id, processedMessage.datetime);
+        postStocksInAPI(processedMessage);
+    }
 }
 
-function postResponseInAPI(response) {
+function postStocksInAPI(response) {
     const body = {
         stocks: response.stocks,
         stocks_id: response.stocks_id,
@@ -29,14 +21,13 @@ function postResponseInAPI(response) {
     axios
         .post(`${API_URL}/stocks/new`, body)
         .then((res) => {
-            console.log('[LISTENER] Response posted in API')
+            console.log('[LISTENER stocks/info] Response posted in API')
         })
         .catch((error) => {
-            console.error('[LISTENER] Error posting response in API', error)
+            console.error('[LISTENER stocks/info] Error posting response in API', error)
         })
 }
 
 module.exports = {
-    suscribeInfo,
     listenStocks
 }
