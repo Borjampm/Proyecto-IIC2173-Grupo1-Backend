@@ -17,23 +17,6 @@ services:
       PORT_LISTENER: ${PORT_LISTENER}
       API_URL: ${API_URL}
 
-  listener-compras:
-    container_name: Listener-Compras
-    build:
-      context: ./ListenerCompras
-      dockerfile: Dockerfile
-    command: bash -c "python3 listenercompras.py"
-    networks:
-      - back-network
-    volumes:
-      - ./ListenerCompras:/ListenerCompras
-    ports:
-      - "${PORT_COMPRAS}:${PORT_COMPRAS}"
-    restart: always
-    environment:
-      PORT_COMPRAS: ${PORT_COMPRAS}
-      API_URL: ${API_URL}
-
   api:
     build:
       context: ./API
