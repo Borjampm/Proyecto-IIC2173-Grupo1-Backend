@@ -32,7 +32,7 @@ En ese directorio se debe crear un archivo `.env` y pegar el contenido del archi
         DB_PORT=5432
         API_URL=http://api:8000
         PORT_COMPRAS=1884
-        FRONT_URL=httpl://localhost:5173
+        FRONT_URL=http://localhost:5173
 
 Notar que `API_URL` debe ser en formato *http*.
 
