@@ -55,7 +55,7 @@ router.post('/buy', async (ctx) => {
         } else {
             const tx = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration));
             console.log('attempting webpay')
-            const returnURL = `${FRONT_URL}/my-stocks";
+            const returnURL = `${FRONT_URL}/validate-transaction`;
             console.log(returnURL);
             const response = await tx.create('100', 'borja', '1', returnURL);
             console.log(response);
