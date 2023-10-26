@@ -8,7 +8,8 @@ const { Options, IntegrationApiKeys, Environment, IntegrationCommerceCodes } = r
 
 const router = new Router();
 
-const topic = 'stocks/requests';
+const topicRequests = 'stocks/requests';
+const topicValidate = 'stocks/validation';
 
 const MQTT_BROKER_URL = 'mqtt://broker.legit.capital';
 const MQTT_PORT = 9000;
@@ -53,48 +54,52 @@ router.post('/buy', async (ctx) => {
             };
             ctx.status = 200;
         } else {
+            // Create Transaction
+            user.Wallet -= TotalAmount;
+            await user.save();
+            const transaction = await ctx.orm.Transaction.create({
+                Username: user.Username,
+                CompanyId: company.id,
+                Price: request.Price,
+                Currency: "USD",
+                TotalAmount,
+                Quantity: request.Quantity,
+                Date: new Date().toISOString(),
+                Completed: false,
+                ipAdress: request.IPAddres,
+                UserId: user.id
+            });
+
+            // Webpay implementation
             const tx = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration));
             console.log('attempting webpay')
             const returnURL = `${process.env.FRONT_URL}/validate-transaction`;
             console.log(returnURL);
-            const response = await tx.create('100', 'borja', '1', returnURL);
+            const response = await tx.create('buy_order', transaction.id, TotalAmount*100, returnURL);
             console.log(response);
             console.log("buiiiiing")
-            // user.Wallet -= TotalAmount;
-            // await user.save();
-            // const transaction = await ctx.orm.Transaction.create({
-            //     Username: user.Username,
-            //     CompanyId: company.id,
-            //     Price: request.Price,
-            //     Currency: "USD",
-            //     TotalAmount,
-            //     Quantity: request.Quantity,
-            //     Date: new Date().toISOString(),
-            //     Completed: false,
-            //     ipAdress: request.IPAddres,
-            //     UserId: 1
 
-            // });
-            // try {
-            //     const message = {
-            //     request_id: transaction.id,
-            //     group_id: '1',
-            //     symbol: company.symbol,
-            //     datetime: transaction.date,
-            //     deposit_token: '',
-            //     quantity: transaction.Quantity,
-            //     seller: 0,
-            //     };
-            //     const payload = JSON.stringify(message);
+            // Create broker message
+            try {
+                const message = {
+                request_id: transaction.id,
+                group_id: '1',
+                symbol: company.symbol,
+                datetime: transaction.date,
+                deposit_token: response.token,
+                quantity: transaction.Quantity,
+                seller: 0,
+                };
+                const payload = JSON.stringify(message);
 
-            //     // Publish the message to the MQTT topic
-            //     client.publish(topic, payload);
-            //     console.log("works?")
-            // } catch (error) {
-            //     console.error('Error publishing MQTT message:', error);
-            //     ctx.status = 500;
-            //     ctx.body = { error: 'Failed to publish MQTT message' };
-            // }
+                // Publish the message to the MQTT topic_requests
+                client.publish(topicRequests, payload);
+                console.log("works?")
+            } catch (error) {
+                console.error('Error publishing MQTT message:', error);
+                ctx.status = 500;
+                ctx.body = { error: 'Failed to publish MQTT message' };
+            }
 
             // ctx.status = 200;
             // ctx.body = { message: 'MQTT message published successfully' };
@@ -102,16 +107,50 @@ router.post('/buy', async (ctx) => {
             ctx.status = 200;
             ctx.body = response;
         }
-        // axios
-        //     .post('localhost:1313/publish-mqtt-message/', postData)
-        //     .then((response) => {
-        //         console.log('Message published successfully:', response.data);
-        //     })
-        //     .catch((error) => {
-        //         console.error('Error publishing message:', error);
-        // });
     } catch (error) {
         console.log(error)
+        ctx.body = error;
+        ctx.status = 400;
+    }
+});
+
+router.post('/webpay-result', async (ctx) => {
+    try {
+        console.log("Checking status")
+        const request = ctx.request.body;
+        console.log(request);
+        const tx = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration));
+        const response = await tx.status(request.Token);
+        console.log(response);
+        const transaction = await ctx.orm.Transaction.findOne({
+            where: {
+                id: response.session_id
+            }
+        });
+        if (response.vci == 'TSY') {
+            transaction.Completed = true;
+            await transaction.save();
+            try {
+                const message = {
+                request_id: transaction.id,
+                group_id: '1',
+                seller: 0,
+                valid: transaction.Completed
+                };
+                const payload = JSON.stringify(message);
+
+                // Publish the message to the MQTT topic_requests
+                client.publish(topicValidate, payload);
+                console.log("works?")
+            } catch (error) {
+                console.error('Error publishing MQTT message:', error);
+                ctx.status = 500;
+                ctx.body = { error: 'Failed to publish MQTT message' };
+            }
+        }
+        ctx.body = transaction.Completed;
+    } catch (error) {
+        console.log(error, "error api")
         ctx.body = error;
         ctx.status = 400;
     }
@@ -120,21 +159,24 @@ router.post('/buy', async (ctx) => {
 // Post para actualizar una órden de compra
 router.post('/validate', async (ctx) => {
     try {
-        console.log("VALIDATING")
+        console.log("Listening purchase");
         const request = ctx.request.body;
-        const transaction = await ctx.orm.Transaction.findOne({
-            where: {
-                id: request.request_id
-            }
-        });
-        if (request.valid) {
-            console.log("ES VALIDO")
-            transaction.Completed = true;
-        } else {
-            console.log("NO ES VALIDO")
-            transaction.Completed = false;}
-        await transaction.save();
-        ctx.body = transaction;
+        console.log(request);
+        // console.log("VALIDATING")
+        // const request = ctx.request.body;
+        // const transaction = await ctx.orm.Transaction.findOne({
+        //     where: {
+        //         id: request.request_id
+        //     }
+        // });
+        // if (request.valid) {
+        //     console.log("ES VALIDO")
+        //     transaction.Completed = true;
+        // } else {
+        //     console.log("NO ES VALIDO")
+        //     transaction.Completed = false;}
+        // await transaction.save();
+        // ctx.body = transaction;
     } catch (error) {
         console.log(error, "error api")
         ctx.body = error;
