@@ -3,6 +3,9 @@ const mqtt = require('mqtt');
 const { Op } = require('sequelize');
 const { consoleError, generalError } = require('../parameters/errors.js');
 
+const WebpayPlus = require("transbank-sdk").WebpayPlus; // CommonJS
+const { Options, IntegrationApiKeys, Environment, IntegrationCommerceCodes } = require("transbank-sdk"); // CommonJS
+
 const router = new Router();
 
 const topic = 'stocks/requests';
@@ -50,6 +53,10 @@ router.post('/buy', async (ctx) => {
             };
             ctx.status = 200;
         } else {
+            const tx = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration));
+            console.log('attempting webpay')
+            const response = await tx.create('100', 'borja', '1', 'http.hola');
+            console.log(response);
             console.log("buiiiiing")
             user.Wallet -= TotalAmount;
             await user.save();
