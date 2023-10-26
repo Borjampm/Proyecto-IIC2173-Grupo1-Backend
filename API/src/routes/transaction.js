@@ -55,48 +55,52 @@ router.post('/buy', async (ctx) => {
         } else {
             const tx = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration));
             console.log('attempting webpay')
-            const response = await tx.create('100', 'borja', '1', 'http.hola');
+            const returnURL = "http://localhost:8000";
+            console.log(returnURL);
+            const response = await tx.create('100', 'borja', '1', returnURL);
             console.log(response);
             console.log("buiiiiing")
-            user.Wallet -= TotalAmount;
-            await user.save();
-            const transaction = await ctx.orm.Transaction.create({
-                Username: user.Username,
-                CompanyId: company.id,
-                Price: request.Price,
-                Currency: "USD",
-                TotalAmount,
-                Quantity: request.Quantity,
-                Date: new Date().toISOString(),
-                Completed: false,
-                ipAdress: request.IPAddres,
-                UserId: 1
+            // user.Wallet -= TotalAmount;
+            // await user.save();
+            // const transaction = await ctx.orm.Transaction.create({
+            //     Username: user.Username,
+            //     CompanyId: company.id,
+            //     Price: request.Price,
+            //     Currency: "USD",
+            //     TotalAmount,
+            //     Quantity: request.Quantity,
+            //     Date: new Date().toISOString(),
+            //     Completed: false,
+            //     ipAdress: request.IPAddres,
+            //     UserId: 1
 
-            });
-            try {
-                const message = {
-                request_id: transaction.id,
-                group_id: '1',
-                symbol: company.symbol,
-                datetime: transaction.date,
-                deposit_token: '',
-                quantity: transaction.Quantity,
-                seller: 0,
-                };
-                const payload = JSON.stringify(message);
+            // });
+            // try {
+            //     const message = {
+            //     request_id: transaction.id,
+            //     group_id: '1',
+            //     symbol: company.symbol,
+            //     datetime: transaction.date,
+            //     deposit_token: '',
+            //     quantity: transaction.Quantity,
+            //     seller: 0,
+            //     };
+            //     const payload = JSON.stringify(message);
 
-                // Publish the message to the MQTT topic
-                client.publish(topic, payload);
-                console.log("works?")
-            } catch (error) {
-                console.error('Error publishing MQTT message:', error);
-                ctx.status = 500;
-                ctx.body = { error: 'Failed to publish MQTT message' };
-            }
+            //     // Publish the message to the MQTT topic
+            //     client.publish(topic, payload);
+            //     console.log("works?")
+            // } catch (error) {
+            //     console.error('Error publishing MQTT message:', error);
+            //     ctx.status = 500;
+            //     ctx.body = { error: 'Failed to publish MQTT message' };
+            // }
 
+            // ctx.status = 200;
+            // ctx.body = { message: 'MQTT message published successfully' };
+            // ctx.body = transaction;
             ctx.status = 200;
-            ctx.body = { message: 'MQTT message published successfully' };
-            ctx.body = transaction;
+            ctx.body = response;
         }
         // axios
         //     .post('localhost:1313/publish-mqtt-message/', postData)
