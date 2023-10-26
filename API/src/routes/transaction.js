@@ -1,10 +1,10 @@
 const Router = require('koa-router');
 const mqtt = require('mqtt');
 const { Op } = require('sequelize');
-const { consoleError, generalError } = require('../parameters/errors.js');
 
-const WebpayPlus = require("transbank-sdk").WebpayPlus; // CommonJS
+const {WebpayPlus} = require("transbank-sdk"); // CommonJS
 const { Options, IntegrationApiKeys, Environment, IntegrationCommerceCodes } = require("transbank-sdk"); // CommonJS
+const { consoleError, generalError } = require('../parameters/errors.js');
 
 const router = new Router();
 
