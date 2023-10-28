@@ -3,7 +3,8 @@ name: Build and Push to ECR
 on:
     push:
         branches:
-            - main, development
+            - main
+            - development
 
 permissions:
     id-token: write
