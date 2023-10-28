@@ -1,0 +1,59 @@
+version: '3.3'
+
+services:
+  listener:
+    image: public.ecr.aws/p3t1e0p3/grupo1-listener:latest
+    container_name: Listener
+    ports:
+      - "${PORT_LISTENER}:${PORT_LISTENER}"
+    volumes:
+      - ./Listener/src:/Listener/src
+    networks:
+      - back-network
+    restart: unless-stopped
+    environment:
+      PORT_LISTENER: ${PORT_LISTENER}
+      API_URL: ${API_URL}
+
+  api:
+    image: public.ecr.aws/p3t1e0p3/grupo1-api:latest
+    container_name: API
+    ports:
+      - "${PORT_API}:${PORT_API}"
+    volumes:
+      - ./API/src:/API/src
+    networks:
+      - back-network
+    depends_on:
+      - db
+      - listener
+    restart: unless-stopped
+    environment:
+      PORT_API: ${PORT_API}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_HOST: ${DB_HOST}
+      FRONT_URL: ${FRONT_URL}
+
+  db:
+    image: postgres:latest
+    container_name: Database
+    restart: always
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    networks:
+      - back-network
+    volumes:
+      - db-volume:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+
+networks:
+  back-network:
+    driver: bridge
+
+volumes:
+  db-volume:
