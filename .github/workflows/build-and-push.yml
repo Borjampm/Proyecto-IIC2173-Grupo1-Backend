@@ -10,11 +10,6 @@ permissions:
     id-token: write
     contents: read
 
-
-env:
-    ECR_REGISTRY: <your-ecr-registry>
-    IMAGE_NAME: <your-image-name>
-
 jobs:
     build-and-push:
         runs-on: ubuntu-latest
@@ -40,6 +35,6 @@ jobs:
             REGISTRY_ALIAS: p3t1e0p3
             REPOSITORY: grupo1-api
             IMAGE_TAG: latest
-            IMAGE_NAME: api
-          run: docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG $IMAGE_NAME
-              docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
+          run: |
+            docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG api
+            docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
