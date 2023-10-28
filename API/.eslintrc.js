@@ -29,6 +29,7 @@ module.exports = {
       "radix": "off",
       "no-restricted-syntax": "off",
       "guard-for-in": "off",
-      "array-callback-return": "off"
+      "array-callback-return": "off",
+      "eqeqeq": "off"
     },
   };
