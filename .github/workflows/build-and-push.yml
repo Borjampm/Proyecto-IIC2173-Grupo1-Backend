@@ -36,5 +36,6 @@ jobs:
             REPOSITORY: grupo1-api
             IMAGE_TAG: latest
           run: |
-            docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG api
+            docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG ./API
             docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
+
