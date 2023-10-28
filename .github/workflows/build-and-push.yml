@@ -59,7 +59,7 @@ jobs:
         - name: Configure AWS Credentials
           uses: aws-actions/configure-aws-credentials@v4
           with:
-            role-to-assume: arn:aws:iam::396488201061:role/iic2173-github-actions-ecr-repo-workflows
+            role-to-assume: arn:aws:iam::866733551467:role/iic2173-github-actions-ecr-workflow
             aws-region: us-east-1
 
         - name: Zip Artifacts to deploy
