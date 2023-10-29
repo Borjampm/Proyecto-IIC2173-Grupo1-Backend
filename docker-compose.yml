@@ -58,7 +58,7 @@ services:
   redis-broker:
     image: redis:7
     volumes:
-      - .workers/src/redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - .workers/redis/redis.conf:/usr/local/etc/redis/redis.conf
     networks:
       - back-network
 
@@ -66,6 +66,50 @@ services:
     build:
       context: ./workers
       dockerfile: Dockerfile
+    command: uvicorn jobmaster:app --reload --host 0.0.0.0 --port 8000
+    volumes:
+      - .workers/jobmaster:/workers/jobmaster
+    expose:
+      - 8000
+    environment:
+      CELERY_BROKER_URL: ${CELERY_BROKER_URL}
+      CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
+    depends_on:
+      - redis-broker
+    networks:
+      - back-network
+
+  workers:
+    build:
+      context: ./workers
+      dockerfile: Dockerfile
+    command: celery -A consumer.celery_app worker --loglevel=INFO --purge --concurrency=1
+    volumes:
+      - .workers/worker:/workers/worker
+    environment:
+      CELERY_BROKER_URL: ${CELERY_BROKER_URL}
+      CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
+    depends_on:
+      - job-master
+    networks:
+      - back-network
+
+  dashboard:
+    build:
+      context: ./workers
+      dockerfile: Dockerfile
+    command: bash -c "sleep 10; celery -A consumer.celery_app flower --loglevel=INFO --url_prefix=dashboard;"
+    expose:
+      - 5555
+    volumes:
+      - ./workers/worker:/opt/
+    depends_on:
+      - jobmaster
+    environment:
+      CELERY_BROKER_URL: ${CELERY_BROKER_URL}
+      CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
+    networks:
+      - back-network
 
 networks:
   back-network:
