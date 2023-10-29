@@ -20,7 +20,7 @@ jobs:
           uses: aws-actions/configure-aws-credentials@v4
           with:
             role-to-assume: arn:aws:iam::866733551467:role/iic2173-github-actions-ecr-workflow
-            aws-region: us-east-1
+            aws-region: us-east-2
 
         - name: Login to Amazon ECR Public
           id: login-ecr-public
@@ -60,7 +60,7 @@ jobs:
           uses: aws-actions/configure-aws-credentials@v4
           with:
             role-to-assume: arn:aws:iam::866733551467:role/iic2173-github-actions-ecr-workflow
-            aws-region: us-east-1
+            aws-region: us-east-2
 
         - name: Zip Artifacts to deploy
           run: zip -r deploy.zip scripts/ appspec.yml docker-compose.production.yml
@@ -88,4 +88,4 @@ jobs:
         - name: Wait until deployment is done
           run: aws deploy wait deployment-successful --deployment-id ${{steps.codedeploy-deploy-trigger.outputs.deploymentId}}
           
-          
+
