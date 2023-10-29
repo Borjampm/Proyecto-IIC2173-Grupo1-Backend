@@ -55,6 +55,18 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
 
+  redis-broker:
+    image: redis:7
+    volumes:
+      - .workers/src/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - back-network
+
+  job-master:
+    build:
+      context: ./workers
+      dockerfile: Dockerfile
+
 networks:
   back-network:
     driver: bridge
