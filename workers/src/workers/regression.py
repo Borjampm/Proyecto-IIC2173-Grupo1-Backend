@@ -36,7 +36,8 @@ def get_stocks_history(days_back, symbol):
             history = response.json()
             allPrices = history["prices"]
             allDates = history["dates"]
-            prices.extend(history)
+            prices.extend(allPrices)
+            dates.extend(allDates)
 
             print(f"[Worker] > Se obtuvieron {len(history)} registros para el día {day}.")
         else:
@@ -59,5 +60,5 @@ def get_linear_regression(days_back, symbol):
     predicted = model.predict(value)
 
     print(f"[Worker] > Predicción de {symbol} para los últimos {days_back} días. El modelo predice {predicted}")
-
+    
     return predicted
