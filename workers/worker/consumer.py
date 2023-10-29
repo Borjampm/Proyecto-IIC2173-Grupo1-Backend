@@ -11,4 +11,4 @@ celery_app = Celery(
 
 # Setup to use all the variables in settings
 # that begins with 'CELERY_'
-celery_app.config_from_object('src.config', namespace='CELERY')
+celery_app.config_from_object('config', namespace='CELERY')

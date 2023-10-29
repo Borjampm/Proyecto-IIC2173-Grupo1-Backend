@@ -1,4 +1,0 @@
-celery[redis]==5.2.7
-fastapi==0.95.2
-python-dotenv==1.0.0
-uvicorn==0.22.0

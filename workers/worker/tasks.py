@@ -1,7 +1,7 @@
 # celery
 from celery import shared_task
-from workers.regression import get_linear_regression
-from workers.weighter import get_weighted
+from worker.regression import get_linear_regression
+from worker.weighter import get_weighted
 
 # standard
 import time

@@ -4,7 +4,7 @@ import os
 from fastapi import FastAPI
 
 # celery
-from workers.tasks import get_prediction
+from worker.tasks import get_prediction
 
 #messages
 message = "message"

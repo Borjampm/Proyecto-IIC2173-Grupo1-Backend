@@ -65,14 +65,14 @@ services:
 
   job-master:
     build:
-      context: ./workers/jobmaster
+      context: ./workers
       dockerfile: Dockerfile
     container_name: JobsMaster
-    command: uvicorn jobmaster:app --reload --host 0.0.0.0 --port 8000
+    command: uvicorn jobmaster.jobsmaster:app --reload --host 0.0.0.0 --port ${PORT_JOBSMASTER}
     volumes:
-      - .workers/jobmaster:/workers/jobmaster
+      - ./workers:/workers
     expose:
-      - 8000
+      - ${PORT_JOBSMASTER}
     environment:
       CELERY_BROKER_URL: ${CELERY_BROKER_URL}
       CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
@@ -83,15 +83,18 @@ services:
 
   workers:
     build:
-      context: ./workers/worker
+      context: ./workers
       dockerfile: Dockerfile
     container_name: Workers
-    command: celery -A src.consumer.celery_app worker --loglevel=INFO --purge --concurrency=1
+    deploy:
+      replicas: ${REPLICAS_WORKERS}
+    command: celery -A worker.consumer.celery_app worker --loglevel=INFO --purge --concurrency=1
     volumes:
-      - .workers/worker:/workers/worker
+      - ./workers:/workers
     environment:
       CELERY_BROKER_URL: ${CELERY_BROKER_URL}
       CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
+      API_URL: ${API_URL}
     depends_on:
       - job-master
     networks:
@@ -99,14 +102,15 @@ services:
 
   dashboard:
     build:
-      context: ./workers/worker
+      context: ./workers
       dockerfile: Dockerfile
     container_name: Dashboard
-    command: bash -c "sleep 10; celery -A src.consumer.celery_app flower --loglevel=INFO --url_prefix=dashboard;"
-    expose:
-      - 5555
+    #Aunque se ejecute en 0.0.0.0, hay que reemplazar ese valor por localhost, http://localhost:5555/dashboard/
+    command: bash -c "sleep 10; celery -A worker.consumer.celery_app flower --loglevel=INFO --url_prefix=dashboard --address=0.0.0.0 --port=${PORT_DASHBOARD};"
+    ports:
+      - ${PORT_DASHBOARD}:${PORT_DASHBOARD}
     volumes:
-      - ./workers/worker:/opt/
+      - ./workers:/opt/
     depends_on:
       - job-master
     environment:
