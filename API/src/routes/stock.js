@@ -96,6 +96,7 @@ router.get('stock.info', '/:symbol', async (ctx) => {
                 required: true,
                 where: { companyId: company.id }
             }],
+            order: [['datetime', 'DESC']]
         });
         const historicDetail = [];
         companyStocks.map (stock => {
