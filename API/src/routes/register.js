@@ -68,4 +68,25 @@ router.get('register.show', '/:symbol', async (ctx) => {
     ctx.status = 200;
 });
 
+router.get('register.weighter', '/:symbol/:day', async (ctx) => {
+    const symbol = ctx.params.symbol;
+    const datetime = ctx.params.datetime;
+    const date = datetime.split('T')[0]
+
+    const registers = await ctx.orm.Register.findAll({
+        where: {
+            symbol: symbol,
+            datetime: {
+                [Op.like]: `${date}%`
+            },
+            valid: true
+        },
+    });
+
+    ctx.body = {
+        transactions: registers.length
+    };
+    ctx.status = 200;
+});
+
 module.exports = router;
