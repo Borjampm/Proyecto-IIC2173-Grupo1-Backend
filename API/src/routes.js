@@ -11,6 +11,6 @@ router.use('/stocks', Stocks.routes());
 router.use('/companies', Companies.routes());
 router.use('/users', Users.routes());
 router.use('/transactions', Transactions.routes());
-router.use('/register', Register.routes());
+router.use('/registers', Register.routes());
 
 module.exports = router;
