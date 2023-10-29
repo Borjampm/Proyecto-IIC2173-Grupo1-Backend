@@ -57,6 +57,7 @@ services:
 
   redis-broker:
     image: redis:7
+    container_name: Broker-Redis
     volumes:
       - .workers/redis/redis.conf:/usr/local/etc/redis/redis.conf
     networks:
@@ -66,6 +67,7 @@ services:
     build:
       context: ./workers/jobmaster
       dockerfile: Dockerfile
+    container_name: JobsMaster
     command: uvicorn jobmaster:app --reload --host 0.0.0.0 --port 8000
     volumes:
       - .workers/jobmaster:/workers/jobmaster
@@ -83,6 +85,7 @@ services:
     build:
       context: ./workers/worker
       dockerfile: Dockerfile
+    container_name: Workers
     command: celery -A src.consumer.celery_app worker --loglevel=INFO --purge --concurrency=1
     volumes:
       - .workers/worker:/workers/worker
@@ -98,6 +101,7 @@ services:
     build:
       context: ./workers/worker
       dockerfile: Dockerfile
+    container_name: Dashboard
     command: bash -c "sleep 10; celery -A src.consumer.celery_app flower --loglevel=INFO --url_prefix=dashboard;"
     expose:
       - 5555
