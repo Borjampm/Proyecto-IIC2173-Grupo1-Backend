@@ -87,3 +87,4 @@ jobs:
 
         - name: Wait until deployment is done
           run: aws deploy wait deployment-successful --deployment-id ${{steps.codedeploy-deploy-trigger.outputs.deploymentId}}
+          
