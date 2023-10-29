@@ -71,8 +71,8 @@ services:
     command: uvicorn jobmaster.jobsmaster:app --reload --host 0.0.0.0 --port ${PORT_JOBSMASTER}
     volumes:
       - ./workers:/workers
-    expose:
-      - ${PORT_JOBSMASTER}
+    ports:
+      - ${PORT_JOBSMASTER}:${PORT_JOBSMASTER}
     environment:
       CELERY_BROKER_URL: ${CELERY_BROKER_URL}
       CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}

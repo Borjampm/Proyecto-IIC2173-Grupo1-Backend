@@ -42,6 +42,7 @@ def get_stocks_history(days_back, symbol):
             print(f"[Worker] > Se obtuvieron {len(history)} registros para el día {day}.")
         else:
             print("[Worker] >>> Error al obtener historial de la API.")
+            print(response)
 
     return prices, dates
 

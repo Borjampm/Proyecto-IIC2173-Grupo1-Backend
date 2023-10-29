@@ -19,9 +19,9 @@ app = FastAPI()
 def read_root():
     return {message: "Jobs Masters, Esta es una ruta por defecto"}
 
-@app.get("/")
-def get_publish_job():
-    job = get_prediction.delay()
+@app.get("/publish/{days_back}/{symbol}/{quantity}")
+def get_publish_job(days_back: int, symbol: str, quantity: int):
+    job = get_prediction.delay(days_back, symbol, quantity)
     return {
         message: published,
         job_id: job.id,
