@@ -86,8 +86,5 @@ jobs:
             echo "deploymentId=$deploymentId" >> $GITHUB_OUTPUT
 
         - name: Wait until deployment is done
-          run: aws deploy wait deployment-successful --deployment-id ${{steps.codedeploy-deploy-trigger.outputs.deploymentId}}
-
-
-
+          run: aws deploy wait deployment-successful --deployment-id "${{steps.codedeploy-deploy-trigger.outputs.deploymentId}}"
           
