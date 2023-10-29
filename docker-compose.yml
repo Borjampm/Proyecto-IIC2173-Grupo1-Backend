@@ -64,7 +64,7 @@ services:
 
   job-master:
     build:
-      context: ./workers
+      context: ./workers/jobmaster
       dockerfile: Dockerfile
     command: uvicorn jobmaster:app --reload --host 0.0.0.0 --port 8000
     volumes:
@@ -81,9 +81,9 @@ services:
 
   workers:
     build:
-      context: ./workers
+      context: ./workers/worker
       dockerfile: Dockerfile
-    command: celery -A consumer.celery_app worker --loglevel=INFO --purge --concurrency=1
+    command: celery -A src.consumer.celery_app worker --loglevel=INFO --purge --concurrency=1
     volumes:
       - .workers/worker:/workers/worker
     environment:
@@ -96,15 +96,15 @@ services:
 
   dashboard:
     build:
-      context: ./workers
+      context: ./workers/worker
       dockerfile: Dockerfile
-    command: bash -c "sleep 10; celery -A consumer.celery_app flower --loglevel=INFO --url_prefix=dashboard;"
+    command: bash -c "sleep 10; celery -A src.consumer.celery_app flower --loglevel=INFO --url_prefix=dashboard;"
     expose:
       - 5555
     volumes:
       - ./workers/worker:/opt/
     depends_on:
-      - jobmaster
+      - job-master
     environment:
       CELERY_BROKER_URL: ${CELERY_BROKER_URL}
       CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
