@@ -6,6 +6,8 @@ const {WebpayPlus} = require("transbank-sdk"); // CommonJS
 const { Options, IntegrationApiKeys, Environment, IntegrationCommerceCodes } = require("transbank-sdk"); // CommonJS
 const { consoleError, generalError } = require('../parameters/errors.js');
 
+const { CourierClient } = require("@trycourier/courier");
+
 const router = new Router();
 
 const topicRequests = 'stocks/requests';
@@ -189,6 +191,20 @@ router.post('/validate', async (ctx) => {
 router.get('transiction.user', '/:username', async (ctx) => {
     try {
 
+        const courier = CourierClient({ authorizationToken: "pk_prod_PV95H4CR1Z4B7DNE7XAPQCRMHFY9" });
+        const { requestId } = await courier.send({
+          message: {
+            to: {
+              email: "cristobal.cuneo@uc.cl",
+            },
+            template: "ZFHX74WEA8M5G8M3VQV2Z2T9WZ6C",
+            data: {
+              recipientName: "recipientName",
+            },
+          },
+        });
+        console.log(requestId);
+
         const transactions = await ctx.orm.Transaction.findAll({
             where: {
               Username: {
@@ -218,8 +234,6 @@ router.get('transiction.user', '/:username', async (ctx) => {
         ctx.status = 400;
     }
 });
-
-
 
 
 
