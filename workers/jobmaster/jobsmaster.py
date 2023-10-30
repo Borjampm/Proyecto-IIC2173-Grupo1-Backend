@@ -38,7 +38,8 @@ def get_job(job_id: str):
 
 @app.get("/temp/{days_back}/{symbol}/{quantity}/{prediction_id}")
 def get_publish_job(days_back: int, symbol: str, quantity: int, prediction_id: int):
-    job = temporal_prediction.delay(days_back, symbol, quantity)
+    print("starting publish job", job)
+    job = temporal_prediction.delay(days_back, symbol, quantity, prediction_id)
     print("get publish job", job)
     return {
         message: published,

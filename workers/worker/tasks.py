@@ -42,7 +42,7 @@ def temporal_prediction(days_back, symbol, quantity, prediction_id):
         prediction = regression * weighter
 
         print(f"[Worker] >>> Predicción para {symbol} es {prediction}.")
-        
+    print("printiiiiing")
     prediction = 178
     url = f"{api_url}/predictions/edit"
     h = {
