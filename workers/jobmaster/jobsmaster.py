@@ -36,14 +36,13 @@ def get_job(job_id: str):
         result: job.result,
     }
 
-@app.get("/temp/{days_back}/{symbol}/{quantity}/{prediction_id}")
-def get_publish_job(days_back: int, symbol: str, quantity: int, prediction_id: int):
-    print("starting publish job", job)
-    job = temporal_prediction.delay(days_back, symbol, quantity, prediction_id)
+@app.get("/temp/{days_back}/{symbol}/{quantity}")
+def get_publish_job(days_back: int, symbol: str, quantity: int):
+    job = temporal_prediction.delay(days_back, symbol, quantity)
     print("get publish job", job)
     return {
         message: published,
-        job_id: job.id,
+        job_id: job.id
     }
 
 @app.get("/temp/job/{job_id}")
