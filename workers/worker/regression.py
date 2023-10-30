@@ -39,7 +39,7 @@ def get_stocks_history(days_back, symbol):
             prices.extend(allPrices)
             dates.extend(allDates)
 
-            print(f"[Worker] > Se obtuvieron {len(history)} registros para el día {day}.")
+            print(f"[Worker] > Se obtuvieron {len(allPrices)}|{len(allDates)} registros para el día {day}.")
         else:
             print("[Worker] >>> Error al obtener historial de la API.")
             print(response)
@@ -49,11 +49,13 @@ def get_stocks_history(days_back, symbol):
 def get_linear_regression(days_back, symbol):
     prices, dates = get_stocks_history(days_back, symbol)
 
+    print(f"[Worker] > Obtenido: | Precios: {prices} | Fechas: {dates}")
+
     Y = np.array(prices).reshape(-1, 1)
     X = np.array(dates).reshape(-1, 1)
 
     model = LinearRegression()
-    model.fit(X, Y)
+    model.fit(Y, X)
 
     new_date = get_day(0).isoformat()
     value = np.array([[new_date]])
@@ -63,3 +65,12 @@ def get_linear_regression(days_back, symbol):
     print(f"[Worker] > Predicción de {symbol} para los últimos {days_back} días. El modelo predice {predicted}")
     
     return predicted
+
+def temporal_regression(days_back, symbol):
+    prices, dates = get_stocks_history(days_back, symbol)
+
+    total = sum(prices)
+    quantity = len(prices)
+
+    return total / quantity    
+

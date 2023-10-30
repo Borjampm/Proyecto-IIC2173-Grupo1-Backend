@@ -4,7 +4,7 @@ import os
 from fastapi import FastAPI
 
 # celery
-from worker.tasks import get_prediction
+from worker.tasks import get_prediction, temporal_prediction
 
 #messages
 message = "message"
@@ -30,6 +30,23 @@ def get_publish_job(days_back: int, symbol: str, quantity: int):
 @app.get("/job/{job_id}")
 def get_job(job_id: str):
     job = get_prediction.AsyncResult(job_id)
+    print(job)
+    return {
+        ready: job.ready(),
+        result: job.result,
+    }
+
+@app.get("/temp/{days_back}/{symbol}/{quantity}")
+def get_publish_job(days_back: int, symbol: str, quantity: int):
+    job = temporal_prediction.delay(days_back, symbol, quantity)
+    return {
+        message: published,
+        job_id: job.id,
+    }
+
+@app.get("/temp/job/{job_id}")
+def get_job(job_id: str):
+    job = temporal_prediction.AsyncResult(job_id)
     print(job)
     return {
         ready: job.ready(),

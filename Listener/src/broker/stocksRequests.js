@@ -19,6 +19,7 @@ function postRegisterInAPI(response) {
         quantity: response.quantity
     }
     axios
+                          registers
         .post(`${API_URL}/registers/new`, body)
         .then((res) => {
             console.log('[LISTENER stocks/requests] Register posted in API')

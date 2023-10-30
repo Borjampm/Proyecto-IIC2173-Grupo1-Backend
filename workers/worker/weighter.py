@@ -7,11 +7,11 @@ load_dotenv()
 api_url = os.getenv("API_URL")
 
 def get_requests(symbol):
-    date = date.today()
+    actual_date = date.today()
     total = 0
 
     for x in range(7):
-        day = date - timedelta(days=x)
+        day = actual_date - timedelta(days=x)
         day = day.isoformat()
 
         response = requests.get(f"{api_url}/stocks/weighted?day={day}")
@@ -26,8 +26,8 @@ def get_requests(symbol):
 
     return total
 
-def get_weighted():
-    transactions = get_requests()
+def get_weighted(symbol):
+    transactions = get_requests(symbol)
 
     numerator = 5 + transactions - 50
     pond = 1 + (numerator / 50)

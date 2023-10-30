@@ -2,6 +2,7 @@ const Router = require('koa-router');
 const { consoleError, generalError } = require('../parameters/errors.js');
 const { defaultPage, defaultSize } = require('../parameters/request.js');
 const { getStartIndex } = require('../utils/request.js');
+const { Op } = require('sequelize');
 
 const router = new Router();
 
@@ -138,11 +139,15 @@ router.get('stock.predict', '/:symbol/prediction_history', async (ctx) => {
         while (moreRecords) {
             const companyStocks = await ctx.orm.Stock.findAll({
                 where: {
-                    companyId: company.id,
                     datetime: {
                         [Op.like]: `${date}%`
                     }
                 },
+                include: [{
+                    model: ctx.orm.CompanyStock,
+                    required: true,
+                    where: { companyId: company.id }
+                }],
                 limit: batchSize,
                 offset: offset
             });
