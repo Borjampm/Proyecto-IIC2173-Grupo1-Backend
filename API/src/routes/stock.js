@@ -123,7 +123,9 @@ router.get('stock.predict', '/:symbol/prediction_history', async (ctx) => {
     try {
         // Obtener la parte de la fecha de la cadena ISO 8601
         const day = ctx.query.day
+        console.log(day)
         const date = day.split('T')[0]
+        console.log(date)
 
         const company = await ctx.orm.Company.findOne({
             where: {

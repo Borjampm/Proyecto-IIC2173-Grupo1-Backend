@@ -30,7 +30,7 @@ def get_stocks_history(days_back, symbol):
 
         print(f"[Worker] > Obteniendo historial de la API para el día {day}.")
 
-        response = requests.get(f"{api_url}/stocks/{symbol}/prediction_history?day={day}")
+        response = requests.get(f"{api_url}stocks/{symbol}/prediction_history?day={day}")
 
         if response.status_code == 200:
             history = response.json()
@@ -63,7 +63,7 @@ def get_linear_regression(days_back, symbol):
     predicted = model.predict(value)
 
     print(f"[Worker] > Predicción de {symbol} para los últimos {days_back} días. El modelo predice {predicted}")
-    
+
     return predicted
 
 def temporal_regression(days_back, symbol):
@@ -72,5 +72,5 @@ def temporal_regression(days_back, symbol):
     total = sum(prices)
     quantity = len(prices)
 
-    return total / quantity    
+    return total / quantity
 
