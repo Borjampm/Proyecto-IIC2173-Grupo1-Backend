@@ -95,7 +95,7 @@ router.post('predictions.new', '/new', async (ctx) => {
     }
 });
 
-router.post('predictions.new', '/edit', async (ctx) => {
+router.patch('predictions.new', '/edit', async (ctx) => {
     console.log("NEWW")
     try {
 
