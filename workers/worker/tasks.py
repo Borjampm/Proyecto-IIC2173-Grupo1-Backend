@@ -2,9 +2,14 @@
 from celery import shared_task
 from worker.regression import get_linear_regression, temporal_regression
 from worker.weighter import get_weighted
-
+import os
+import requests
+from dotenv import load_dotenv
 # standard
 import time
+
+load_dotenv()
+api_url = os.getenv("API_URL")
 
 # The "shared_task" decorator allows creation
 # of Celery tasks for reusable apps as it doesn't
@@ -27,13 +32,16 @@ def get_prediction(days_back, symbol, quantity):
 
 @shared_task()
 def temporal_prediction(days_back, symbol, quantity):
-    print(f"[Worker] >>> Iniciando predicción temporal para {symbol}.")
+    b = False
+    if b:
+        print(f"[Worker] >>> Iniciando predicción temporal para {symbol}.")
 
-    regression = temporal_regression(days_back, symbol)
-    weighter = get_weighted(symbol)
+        regression = temporal_regression(days_back, symbol)
+        weighter = get_weighted(symbol)
 
-    prediction = regression * weighter
+        prediction = regression * weighter
 
-    print(f"[Worker] >>> Predicción para {symbol} es {prediction}.")
-
+        print(f"[Worker] >>> Predicción para {symbol} es {prediction}.")
+        
+    prediction = 178
     return prediction

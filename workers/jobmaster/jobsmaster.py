@@ -39,6 +39,7 @@ def get_job(job_id: str):
 @app.get("/temp/{days_back}/{symbol}/{quantity}")
 def get_publish_job(days_back: int, symbol: str, quantity: int):
     job = temporal_prediction.delay(days_back, symbol, quantity)
+    print("get publish job", job)
     return {
         message: published,
         job_id: job.id,
@@ -47,7 +48,7 @@ def get_publish_job(days_back: int, symbol: str, quantity: int):
 @app.get("/temp/job/{job_id}")
 def get_job(job_id: str):
     job = temporal_prediction.AsyncResult(job_id)
-    print(job)
+    print("get job", job)
     return {
         ready: job.ready(),
         result: job.result,

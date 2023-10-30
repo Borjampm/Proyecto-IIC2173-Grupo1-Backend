@@ -18,7 +18,9 @@ def get_requests(symbol):
         
         if response.status_code == 200:
             data = response.json()
+            print("DATAaaaaaaaa", data)
             total += int(data["transactions"])
+
             print(f"[Worker] > Se han añadido {data['transactions']} transacciones, total {total}")
 
         else:
