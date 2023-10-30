@@ -2,6 +2,7 @@ const Router = require('koa-router');
 const { consoleError, generalError } = require('../parameters/errors.js');
 const { defaultPage, defaultSize } = require('../parameters/request.js');
 const { getStartIndex } = require('../utils/request.js');
+const { Op } = require('sequelize');
 
 const router = new Router();
 
@@ -118,5 +119,61 @@ router.get('stock.info', '/:symbol', async (ctx) => {
     }
 });
 
+router.get('stock.predict', '/:symbol/prediction_history', async (ctx) => {
+    try {
+        // Obtener la parte de la fecha de la cadena ISO 8601
+        const day = ctx.query.day
+        const date = day.split('T')[0]
+
+        const company = await ctx.orm.Company.findOne({
+            where: {
+                symbol: ctx.request.params.symbol
+            }
+        });
+
+        let offset = 0;
+        const batchSize = 100;
+        let moreRecords = true;
+        const historicPrices = [];
+        const historicDates = [];
+
+        while (moreRecords) {
+            const companyStocks = await ctx.orm.Stock.findAll({
+                where: {
+                    datetime: {
+                        [Op.like]: `${date}%`
+                    }
+                },
+                include: [{
+                    model: ctx.orm.CompanyStock,
+                    required: true,
+                    where: { companyId: company.id }
+                }],
+                limit: batchSize,
+                offset: offset
+            });
+
+            if (companyStocks.length > 0) {
+                const prices = companyStocks.map(stock => stock.price);
+                const dates = companyStocks.map(stock => stock.datetime);
+                historicPrices.push(...prices);
+                historicDates.push(...dates);
+                offset += batchSize;
+            } else {
+                moreRecords = false;
+            }
+        }
+
+        ctx.body = {
+            prices: historicPrices,
+            dates: historicDates
+        };
+        ctx.status = 200;
+    } catch (error) {
+        console.error(consoleError, error);
+        ctx.body = generalError;
+        ctx.status = 400;
+    }
+});
 
 module.exports = router;
