@@ -10,7 +10,9 @@ const router = new Router();
 const WORKERS_URL = process.env.WORKERS_URL;
 
 router.post('predictions.create', '/', async (ctx) => {
+    console.log("HOLAAAAAAAA")
     try {
+
         console.log("[API] Starting POST /predictions/")
 
         const body = ctx.request.body;

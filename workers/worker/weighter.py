@@ -14,7 +14,7 @@ def get_requests(symbol):
         day = actual_date - timedelta(days=x)
         day = day.isoformat()
 
-        response = requests.get(f"{api_url}/stocks/weighted?day={day}")
+        response = requests.get(f"{api_url}/stocks/{symbol}/prediction_history?day={day}")
         
         if response.status_code == 200:
             data = response.json()
