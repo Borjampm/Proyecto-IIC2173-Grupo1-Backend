@@ -23,7 +23,8 @@ router.post('predictions.create', '/', async (ctx) => {
         const fechaActual = new Date();
         const fechaISO = fechaActual.toISOString();
 
-        let job_id = NULL;
+        let job_id = null;
+        let prediction = null;
 
         axios
             .get(`${WORKERS_URL}/temp/${days_back}/${symbol}/${quantity}`)
@@ -35,14 +36,14 @@ router.post('predictions.create', '/', async (ctx) => {
                 throw new Error('[API] Error posting prediction in Workers', error)
             })
 
-        if (job_id == NULL) {
+        if (job_id == null) {
             throw new Error('Error posting prediction in Workers')
         } else {
-            const prediction = await ctx.orm.Prediction.create({
+            prediction = await ctx.orm.Prediction.create({
                 user_id: id_user,
                 job_id: job_id,
                 state: unfinished,
-                value: NULL,
+                value: null,
                 days_back: days_back,
                 symbol: symbol,
                 quantity: quantity,
@@ -50,9 +51,10 @@ router.post('predictions.create', '/', async (ctx) => {
             });
 
             console.log("[API] Prediction created")
-            ctx.body = prediction;
-            ctx.status = 201;
         }
+
+        ctx.body = prediction;
+        ctx.status = 201;
     } catch (err) {
         console.error(err);
     }

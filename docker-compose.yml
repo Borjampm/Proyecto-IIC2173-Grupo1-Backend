@@ -39,6 +39,7 @@ services:
       DB_NAME: ${DB_NAME}
       DB_HOST: ${DB_HOST}
       FRONT_URL: ${FRONT_URL}
+      WORKERS_URL: ${WORKERS_URL}
 
   db:
     image: postgres:latest
