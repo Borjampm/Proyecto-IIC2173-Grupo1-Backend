@@ -35,7 +35,6 @@ console.error('MQTT error:', error);
 });
 // Post para crear una órden de compra
 router.post('/buy', async (ctx) => {
-
     try {
         const request = ctx.request.body;
         const user = await ctx.orm.User.findOne({
@@ -71,6 +70,25 @@ router.post('/buy', async (ctx) => {
                 ipAdress: request.IPAddres,
                 UserId: user.id
             });
+            const courier = CourierClient({ authorizationToken: "pk_prod_PV95H4CR1Z4B7DNE7XAPQCRMHFY9" });
+            const { requestId } = await courier.send({
+                message: {
+                    to: {
+                    data: {
+                        name: user.Username,
+                    },
+                    email: user.Mail,
+                    },
+                    content: {
+                    title: "Compra exitosa",
+                    body: "Hola {{name}}!, tu compra ha sido exitosa.",
+                    },
+                    routing: {
+                    method: "single",
+                    channels: ["email"],
+                    },
+                },
+                });
 
             // Webpay implementation
             const tx = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration));
@@ -190,21 +208,6 @@ router.post('/validate', async (ctx) => {
 
 router.get('transiction.user', '/:username', async (ctx) => {
     try {
-
-        const courier = CourierClient({ authorizationToken: "pk_prod_PV95H4CR1Z4B7DNE7XAPQCRMHFY9" });
-        const { requestId } = await courier.send({
-          message: {
-            to: {
-              email: "cristobal.cuneo@uc.cl",
-            },
-            template: "ZFHX74WEA8M5G8M3VQV2Z2T9WZ6C",
-            data: {
-              recipientName: "recipientName",
-            },
-          },
-        });
-        console.log(requestId);
-
         const transactions = await ctx.orm.Transaction.findAll({
             where: {
               Username: {
