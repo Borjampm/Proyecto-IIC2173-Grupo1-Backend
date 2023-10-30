@@ -11,9 +11,11 @@ timezone = 'America/Santiago'
 imports = ('worker.tasks', )
 # beat scheduler
 CELERY_BEAT_SCHEDULE = {
-    'every-1-minutes_add': {
+    'call-5-times-add': {
         'task': 'worker.tasks.add',
-        'schedule': crontab(minute='*/1'), # every 1 minute
+        'schedule': crontab(minute='*/1'),  # every 1 minute
         'args': (16, 16),
+        'options': {'expires': 5}  # Set the number of executions to 5
     },
 }
+
