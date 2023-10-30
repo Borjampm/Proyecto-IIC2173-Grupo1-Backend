@@ -148,7 +148,7 @@ router.post('/webpay-result', async (ctx) => {
                 ctx.body = { error: 'Failed to publish MQTT message' };
             }
         }
-        ctx.body = transaction.Completed;
+        ctx.body = transaction;
     } catch (error) {
         console.log(error, "error api")
         ctx.body = error;
