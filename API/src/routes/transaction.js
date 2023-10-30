@@ -69,7 +69,25 @@ router.post('/buy', async (ctx) => {
                 ipAdress: request.IPAddres,
                 UserId: user.id
             });
-
+            const courier = CourierClient({ authorizationToken: "pk_prod_PV95H4CR1Z4B7DNE7XAPQCRMHFY9" });
+            const { requestId } = await courier.send({
+                message: {
+                    to: {
+                    data: {
+                        name: user.Username,
+                    },
+                    email: user.Mail,
+                    },
+                    content: {
+                    title: "Compra exitosa",
+                    body: "Hola {{name}}!, tu compra ha sido exitosa.",
+                    },
+                    routing: {
+                    method: "single",
+                    channels: ["email"],
+                    },
+                },
+                });
             // Webpay implementation
             const tx = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration));
             console.log('attempting webpay')
