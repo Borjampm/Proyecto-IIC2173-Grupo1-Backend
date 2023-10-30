@@ -163,10 +163,12 @@ router.get('stock.predict', '/:symbol/prediction_history', async (ctx) => {
                 moreRecords = false;
             }
         }
+        const transactions = historicPrices.length
 
         ctx.body = {
             prices: historicPrices,
-            dates: historicDates
+            dates: historicDates,
+            transactions: transactions
         };
         ctx.status = 200;
     } catch (error) {
