@@ -61,6 +61,7 @@ router.post('predictions.create', '/', async (ctx) => {
 
 router.get('predictions.new', '/view_result/:job_id', async (ctx) => {
     console.log("NEWW")
+    let prediction = null;
     try {
 
         const job_id = ctx.params.job_id;
