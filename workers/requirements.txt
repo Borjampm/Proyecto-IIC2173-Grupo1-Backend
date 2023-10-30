@@ -1,0 +1,8 @@
+celery[redis]
+fastapi
+flower
+uvicorn
+scikit-learn
+numpy
+requests
+python-dotenv
