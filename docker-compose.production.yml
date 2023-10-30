@@ -51,13 +51,13 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
 
-    redis-broker:
-      image: redis:7
-      container_name: Broker-Redis
-      volumes:
-        - .workers/redis/redis.conf:/usr/local/etc/redis/redis.conf
-      networks:
-        - back-network
+  redis-broker:
+    image: redis:7
+    container_name: Broker-Redis
+    volumes:
+      - .workers/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - back-network
 
   job-master:
     build:
