@@ -27,18 +27,28 @@ router.post('predictions.create', '/', async (ctx) => {
 
         let job_id = null;
         let prediction = null;
-
+        prediction = await ctx.orm.Prediction.create({
+            user_id: id_user,
+            job_id: job_id,
+            state: unfinished,
+            value: null,
+            days_back: days_back,
+            symbol: symbol,
+            quantity: quantity,
+            datetiem: fechaISO
+        });
         axios
-            .get(`${WORKERS_URL}/temp/${days_back}/${symbol}/${quantity}`)
+            .get(`${WORKERS_URL}/temp/${days_back}/${symbol}/${quantity}/${prediction.id}`)
             .then((res) => {
                 print(res, "RESSSSS")
                 console.log('[API] Prediction posted in Workers')
                 job_id = res.data.job_id
             })
             .catch((error) => { 
-                console.log(error) 
-                throw new Error('[API] Error posting prediction in Workers') 
+                console.log("EEEEEE", error) 
+                // throw new Error('[API] Error posting prediction in Workers') 
             })
+
 
         ctx.body = prediction;
         ctx.status = 201;
