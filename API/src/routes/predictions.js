@@ -95,5 +95,31 @@ router.post('predictions.new', '/new', async (ctx) => {
     }
 });
 
+router.post('predictions.new', '/edit', async (ctx) => {
+    console.log("NEWW")
+    try {
+
+        const body = ctx.request.body;
+
+        const pid = body.predictionid;
+        const job_id = body.job_id;
+        const value = body.value;
+
+        const prediction = await ctx.orm.Prediction.findOne({
+            where: {
+                id: pid
+            }
+        });
+        prediction.state = "FINISHED"
+        prediction.value = value
+        prediction.value = value
+
+        ctx.body = prediction;
+        ctx.status = 200;
+    } catch (err) {
+        console.error(err);
+    }
+});
+
 
 module.exports = router;

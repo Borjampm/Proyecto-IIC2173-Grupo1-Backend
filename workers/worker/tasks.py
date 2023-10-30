@@ -31,7 +31,7 @@ def get_prediction(days_back, symbol, quantity):
     return prediction
 
 @shared_task()
-def temporal_prediction(days_back, symbol, quantity):
+def temporal_prediction(days_back, symbol, quantity, prediction_id):
     b = False
     if b:
         print(f"[Worker] >>> Iniciando predicción temporal para {symbol}.")
@@ -44,4 +44,12 @@ def temporal_prediction(days_back, symbol, quantity):
         print(f"[Worker] >>> Predicción para {symbol} es {prediction}.")
         
     prediction = 178
+    url = f"{api_url}/predictions/edit"
+    h = {
+        'predictionid': prediction_id,
+        'job_id': 1,
+        'value': prediction
+
+        }
+    response = requests.patch(url, data =h)
     return prediction
