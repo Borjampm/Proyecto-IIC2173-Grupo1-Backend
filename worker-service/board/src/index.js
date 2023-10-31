@@ -22,6 +22,25 @@ const { addQueue, removeQueue, setQueues, replaceQueues } = createBullBoard({
 
 const app = express();
 
+app.post("/admin/addTask", (req, res) => {
+  try {
+    // Access the data from the request body
+    const taskData = req.body;
+    console.log(taskData)
+
+    // You can perform any processing or validation of the data here
+
+    // For example, you can add the task data to your queue
+    // Replace this with your actual queue logic
+    // Example: queueMQ.add("audio_transcoding", taskData);
+
+    res.status(200).json({ message: "Task added successfully", data: taskData });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to add the task" });
+  }
+});
+
 app.use("/admin/queues", serverAdapter.getRouter());
 
 // other configurations of your server
