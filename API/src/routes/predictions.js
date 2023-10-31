@@ -1,9 +1,21 @@
 const Router = require('koa-router');
 const axios = require('axios');
+const { Queue, Worker } = require('bullmq');
+const IORedis = require('ioredis');
 
 unfinished = "UNFINISHED";
 finished = "FINISHED";
 error = "ERROR";
+
+const redisConnectionOptions = {
+    host: process.env.REDIS_HOST || 'redis', // Use the environment variable or default to 'redis' (your service name in Docker Compose)
+    port: process.env.REDIS_PORT || 6379,    // Use the environment variable or default to 6379
+    password: 1029,    // Optional, use if you have a Redis password
+  };
+
+const queue = new Queue('audio transcoding', {
+    connection: new IORedis(redisConnectionOptions),
+});
 
 const router = new Router();
 
@@ -26,32 +38,26 @@ router.post('predictions.create', '/', async (ctx) => {
         let job_id = null;
         let prediction = null;
 
-        axios
-            .get(`${WORKERS_URL}/temp/${days_back}/${symbol}/${quantity}`)
-            .then((res) => {
-                console.log('[API] Prediction posted in Workers')
-                job_id = res.data.job_id
-            })
-            .catch((error) => {
-                throw new Error('[API] Error posting prediction in Workers', error)
-            })
-
-        if (job_id == null) {
-            throw new Error('Error posting prediction in Workers')
-        } else {
             prediction = await ctx.orm.Prediction.create({
-                user_id: id_user,
-                job_id: job_id,
-                state: unfinished,
-                value: null,
-                days_back: days_back,
-                symbol: symbol,
-                quantity: quantity,
+                user_id: "id_user",
+                job_id: "job_id",
+                state: "f",
+                value: "fff",
+                days_back: 2,
+                symbol: 2,
+                quantity: 2,
                 datetiem: fechaISO
             });
 
             console.log("[API] Prediction created")
-        }
+            // Example: Send a task to the queue
+            queue.add('audio', 'http://example.com/audio1.mp3');
+
+            // Example: Set up a BullMQ worker
+            const worker = new Worker('audio transcoding', async job => {
+            // Your task processing logic here
+            console.log(`Processing job: ${job.id}`);
+            });
 
         ctx.body = prediction;
         ctx.status = 201;

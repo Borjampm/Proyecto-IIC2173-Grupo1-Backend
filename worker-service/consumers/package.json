@@ -1,0 +1,12 @@
+{
+  "name": "workers",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "bullmq": "^3.13.4"
+  },
+  "scripts": {
+    "start": "node src/index.js"
+  }
+}

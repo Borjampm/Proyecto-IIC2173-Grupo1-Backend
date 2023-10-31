@@ -39,7 +39,6 @@ services:
       DB_NAME: ${DB_NAME}
       DB_HOST: ${DB_HOST}
       FRONT_URL: ${FRONT_URL}
-      WORKERS_URL: ${WORKERS_URL}
 
   db:
     image: postgres:latest
@@ -56,69 +55,51 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
 
-  # redis-broker:
-  #   image: redis:7
-  #   container_name: Broker-Redis
-  #   volumes:
-  #     - .workers/redis/redis.conf:/usr/local/etc/redis/redis.conf
-  #   networks:
-  #     - back-network
-
-  # job-master:
-  #   build:
-  #     context: ./workers
+  # producer:
+  #   build: 
+  #     context: ./worker-service/producers
   #     dockerfile: Dockerfile
-  #   container_name: JobsMaster
-  #   command: uvicorn jobmaster.jobsmaster:app --reload --host 0.0.0.0 --port ${PORT_JOBSMASTER}
-  #   volumes:
-  #     - ./workers:/workers
-  #   ports:
-  #     - ${PORT_JOBSMASTER}:${PORT_JOBSMASTER}
-  #   environment:
-  #     CELERY_BROKER_URL: ${CELERY_BROKER_URL}
-  #     CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
-  #   depends_on:
-  #     - redis-broker
   #   networks:
   #     - back-network
+  #   environment:
+  #     - REDIS_PORT=6379
+  #     - REDIS_PASSWORD=${REDIS_PASSWORD}
+  #     - REDIS_HOST=redis
 
-  # workers:
-  #   build:
-  #     context: ./workers
-  #     dockerfile: Dockerfile
-  #   container_name: Workers
-  #   deploy:
-  #     replicas: ${REPLICAS_WORKERS}
-  #   command: celery -A worker.consumer.celery_app worker --loglevel=INFO --purge --concurrency=1
-  #   volumes:
-  #     - ./workers:/workers
-  #   environment:
-  #     CELERY_BROKER_URL: ${CELERY_BROKER_URL}
-  #     CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
-  #     API_URL: ${API_URL}
-  #   depends_on:
-  #     - job-master
-  #   networks:
-  #     - back-network
+  consumer:
+    build: 
+      context: ./worker-service/consumers
+      dockerfile: Dockerfile
+    networks:
+      - back-network
+    environment:
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_HOST=redis
+    deploy:
+      replicas: 1
 
-  # dashboard:
-  #   build:
-  #     context: ./workers
-  #     dockerfile: Dockerfile
-  #   container_name: Dashboard
-  #   #Aunque se ejecute en 0.0.0.0, hay que reemplazar ese valor por localhost, http://localhost:5555/dashboard/
-  #   command: bash -c "sleep 10; celery -A worker.consumer.celery_app flower --loglevel=INFO --url_prefix=dashboard --address=0.0.0.0 --port=${PORT_DASHBOARD};"
-  #   ports:
-  #     - ${PORT_DASHBOARD}:${PORT_DASHBOARD}
-  #   volumes:
-  #     - ./workers:/opt/
-  #   depends_on:
-  #     - job-master
-  #   environment:
-  #     CELERY_BROKER_URL: ${CELERY_BROKER_URL}
-  #     CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
-  #   networks:
-  #     - back-network
+  redis:   # Este es el broker que simplemente duplica la imagen, como no expongo nada, no tiene asignado un puerto (no es una API por ejemplo)
+    image: redis
+    container_name: redis
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
+    networks:
+      - back-network
+
+  board:
+    build: 
+      context: ./worker-service/board
+      dockerfile: Dockerfile
+    networks:
+      - back-network
+    environment:
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_HOST=redis
+    ports:
+      - 3000:3000
 
 networks:
   back-network:
