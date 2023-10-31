@@ -39,6 +39,7 @@ console.log("Worker Listening to Jobs...");
 
 // Callback on completed jobs
 worker.on("completed", (job, returnvalue) => {
+  
   console.log(`Worker completed job ${job.id} with result ${returnvalue}`);
 });
 
