@@ -13,11 +13,11 @@ const queueMQ = new Queue("audio transcoding", {
 }); // Specify Redis connection using object);
 
 const serverAdapter = new ExpressAdapter();
-serverAdapter.setBasePath("/admin/queues");
+// serverAdapter.setBasePath("/admin/queues");
 
 const { addQueue, removeQueue, setQueues, replaceQueues } = createBullBoard({
   queues: [new BullMQAdapter(queueMQ)],
-  serverAdapter: serverAdapter,
+  // serverAdapter: serverAdapter,
 });
 
 const app = express();
@@ -41,7 +41,7 @@ app.post("/admin/addTask", (req, res) => {
   }
 });
 
-app.use("/admin/queues", serverAdapter.getRouter());
+// app.use("/admin/queues", serverAdapter.getRouter());
 
 // other configurations of your server
 
