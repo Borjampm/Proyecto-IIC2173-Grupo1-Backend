@@ -1,4 +1,4 @@
-const { Worker, Job } = require("bullmq");
+const { Worker, Job, Queue } = require("bullmq");
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
