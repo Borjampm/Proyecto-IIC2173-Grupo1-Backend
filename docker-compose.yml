@@ -88,18 +88,18 @@ services:
     networks:
       - back-network
 
-  board:
-    build: 
-      context: ./worker-service/board
-      dockerfile: Dockerfile
-    networks:
-      - back-network
-    environment:
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - REDIS_HOST=redis
-    ports:
-      - 3000:3000
+  # board:
+  #   build: 
+  #     context: ./worker-service/board
+  #     dockerfile: Dockerfile
+  #   networks:
+  #     - back-network
+  #   environment:
+  #     - REDIS_PORT=6379
+  #     - REDIS_PASSWORD=${REDIS_PASSWORD}
+  #     - REDIS_HOST=redis
+  #   ports:
+  #     - 3000:3000
 
 networks:
   back-network:
