@@ -6,7 +6,7 @@ const { ExpressAdapter } = require("@bull-board/express");
 
 const queueMQ = new Queue("audio transcoding", {
   connection: {
-    host: process.env.REDIS_HOST || "localhost",
+    host: process.env.REDIS_HOST || "redis",
     port: process.env.REDIS_PORT || 6379,
     password: process.env.REDIS_PASSWORD,
   },
