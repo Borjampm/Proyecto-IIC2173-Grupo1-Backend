@@ -1,8 +1,8 @@
 const Router = require('koa-router');
+const { Op } = require('sequelize');
 const { consoleError, generalError } = require('../parameters/errors.js');
 const { defaultPage, defaultSize } = require('../parameters/request.js');
 const { getStartIndex } = require('../utils/request.js');
-const { Op } = require('sequelize');
 
 const router = new Router();
 
@@ -121,7 +121,7 @@ router.get('stock.info', '/:symbol', async (ctx) => {
 router.get('stock.predict', '/:symbol/prediction_history', async (ctx) => {
     try {
         // Obtener la parte de la fecha de la cadena ISO 8601
-        const day = ctx.query.day
+        const {day} = ctx.query
         const date = day.split('T')[0]
 
         const company = await ctx.orm.Company.findOne({
@@ -149,7 +149,7 @@ router.get('stock.predict', '/:symbol/prediction_history', async (ctx) => {
                     where: { companyId: company.id }
                 }],
                 limit: batchSize,
-                offset: offset
+                offset
             });
 
             if (companyStocks.length > 0) {

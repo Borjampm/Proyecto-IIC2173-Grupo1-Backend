@@ -8,7 +8,7 @@ router.post('register.create', '/new', async (ctx) => {
         const request = ctx.request.body;
 
         const register = await ctx.orm.Register.create({
-            request_id: request.request_id,
+            requestId: request.requestId,
             group_id: parseInt(request.group_id),
             symbol: request.symbol,
             datetime: request.datetime,
@@ -28,17 +28,17 @@ router.post('register.create', '/new', async (ctx) => {
 
 router.patch('register.update', '/:id/:valid', async (ctx) => {
     try {
-        const request_id = ctx.params.id;
-        const valid = ctx.params.valid;
+        const requestId = ctx.params.id;
+        const {valid} = ctx.params;
 
         const register = await ctx.orm.Register.findOne({
             where: {
-                request_id
+                requestId
             }
         });
 
         if (!register) {
-            console.log("[API] >>> Register not found", request_id)
+            console.log("[API] >>> Register not found", requestId)
             ctx.status = 404;
             ctx.body = {
                 error: "Register not found"
@@ -46,14 +46,14 @@ router.patch('register.update', '/:id/:valid', async (ctx) => {
             return;
         }
 
-        console.log("[API] Register updating", request_id);
+        console.log("[API] Register updating", requestId);
 
         if (valid == 'true' || valid == 'True' || valid == 'TRUE' || valid == '1' || valid == 1 || valid == true) {
             register.valid = true;
-            console.log("[API] Register status is valid", request_id, true)
+            console.log("[API] Register status is valid", requestId, true)
         } else {
             register.valid = false;
-            console.log("[API] Register status is invalid", request_id, false)
+            console.log("[API] Register status is invalid", requestId, false)
         }
 
         await register.save();
@@ -70,7 +70,7 @@ router.patch('register.update', '/:id/:valid', async (ctx) => {
 
 router.get('register.show', '/:symbol', async (ctx) => {
     try {
-        const symbol = ctx.params.symbol;
+        const {symbol} = ctx.params;
 
         const registers = await ctx.orm.Register.findAll({
             where: {
@@ -89,13 +89,13 @@ router.get('register.show', '/:symbol', async (ctx) => {
 
 router.get('register.weighter', '/:symbol/:day', async (ctx) => {
     try {
-        const symbol = ctx.params.symbol;
-        const datetime = ctx.params.datetime;
+        const {symbol} = ctx.params;
+        const {datetime} = ctx.params;
         const date = datetime.split('T')[0]
 
         const registers = await ctx.orm.Register.findAll({
             where: {
-                symbol: symbol,
+                symbol,
                 datetime: {
                     [Op.like]: `${date}%`
                 },

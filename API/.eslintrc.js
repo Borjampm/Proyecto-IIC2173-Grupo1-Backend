@@ -30,6 +30,7 @@ module.exports = {
       "no-restricted-syntax": "off",
       "guard-for-in": "off",
       "array-callback-return": "off",
-      "eqeqeq": "off"
+      "eqeqeq": "off",
+      "no-undef": "off"
     },
   };
