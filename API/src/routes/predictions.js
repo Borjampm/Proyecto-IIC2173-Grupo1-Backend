@@ -1,5 +1,4 @@
 const Router = require('koa-router');
-const axios = require('axios');
 
 const router = new Router();
 
