@@ -6,7 +6,12 @@ const orm = require("./sequelize/models");
 const router = require("./routes.js");
 
 const app = new Koa();
-app.use(cors());
+app.use(cors({
+    origin: '*',
+    methods: '*',
+    allowHeaders: '*',
+    credentials: true,
+  }));
 
 app.context.orm = orm;
 
