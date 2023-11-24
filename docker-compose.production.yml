@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   listener:
-    image: grupo1-listener:latest
+    image: public.ecr.aws/p3t1e0p3/grupo1-listener:latest
     container_name: Listener
     ports:
       - "${PORT_LISTENER}:${PORT_LISTENER}"
@@ -16,7 +16,7 @@ services:
       API_URL: ${API_URL}
 
   api:
-    image: grupo1-api:latest
+    image: public.ecr.aws/p3t1e0p3/grupo1-api:latest
     container_name: API
     ports:
       - "${PORT_API}:${PORT_API}"
