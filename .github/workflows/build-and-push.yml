@@ -4,7 +4,6 @@ on:
     push:
         branches:
             - main
-            - fix-docker-production
 permissions:
     id-token: write
     contents: read
