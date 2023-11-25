@@ -14,9 +14,13 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Auction.init({
-    auction_id: DataTypes.UUIDV4,
-    proposal_id: DataTypes.UUIDV4,
-    stock_id: DataTypes.UUIDV4,
+    auction_id: {
+      allowNull: false,
+      primaryKey: true,
+      type: DataTypes.UUID,
+    },
+    proposal_id: DataTypes.UUID,
+    stock_id: DataTypes.UUID,
     quantity: DataTypes.INTEGER,
     group_id: DataTypes.INTEGER,
     type: DataTypes.STRING
