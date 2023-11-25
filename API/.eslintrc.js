@@ -31,6 +31,7 @@ module.exports = {
       "guard-for-in": "off",
       "array-callback-return": "off",
       "eqeqeq": "off",
-      "no-undef": "off"
+      "no-undef": "off",
+      "camelcase": "off",
     },
   };

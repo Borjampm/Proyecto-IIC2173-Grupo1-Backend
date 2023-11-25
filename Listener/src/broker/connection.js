@@ -3,6 +3,7 @@ const loadCredentials = require('../parameters/credentials')
 const { listenStocks } = require('./stocksInfo')
 const { listenValidation } = require('./stocksValidation')
 const { listenRequests } = require('./stocksRequests')
+const { listenAuction } = require('./stocksAuctions')
 
 const credentials = loadCredentials()
 const URL = `mqtt://${credentials.HOST}:${credentials.PORT}`
@@ -17,10 +18,11 @@ const options = {
 function connectToBroker() {
     const client = mqtt.connect(URL, options);
 
-    client.on('connect', function () {  
+    client.on('connect', function () {
         suscribe(URL, client, 'stocks/info');
         suscribe(URL, client, 'stocks/validation');
         suscribe(URL, client, 'stocks/requests');
+        suscribe(URL, client, 'stocks/auctions');
     })
 
     client.on('message', function (topic, message) {
@@ -29,6 +31,8 @@ function connectToBroker() {
             listenStocks(topic, message, URL);
         } else if (topic === 'stocks/validation') {
             listenValidation(topic, message, URL);
+        } else if (topic === 'stocks/auctions') {
+            listenAuction(topic, message, URL);
         } else {
             listenRequests(topic, message, URL);
         }
