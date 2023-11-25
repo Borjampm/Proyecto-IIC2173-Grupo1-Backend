@@ -7,7 +7,8 @@ const router = new Router();
 
 router.get('auctions.show', '/all', async (ctx) => {
     try {
-        ctx.body = "Hello"
+        const auctions = await ctx.orm.Auction.findAll();
+        ctx.body = auctions;
         ctx.status = 200;
     } catch (error) {
         console.error(consoleError, error);
@@ -20,20 +21,14 @@ router.post('auction.create', '/new', async (ctx) => {
     try {
         const request = ctx.request.body
         console.log(request)
-
-        //     // create stock
-        //     const newStock = await ctx.orm.Stock.create({
-        //         stocksId,
-        //         datetime,
-        //         price: stocks[k].price,
-        //         currency: stocks[k].currency,
-        //         source: stocks[k].source
-        //     })
-        //     // associate stock with company
-        //     await ctx.orm.CompanyStock.create({
-        //         companyId: company.id,
-        //         stockId: newStock.id
-        // })
+        const newAuction = await ctx.orm.Auction.create({
+            auction_id: request.auction_id,
+            proposal_id: request.proposal_id,
+            stock_id: request.stock_id,
+            quantity: request.quantity,
+            group_id: request.group_id,
+            type: request.type
+        });
         console.log('[API] Auction logged', ctx.body)
         ctx.status = 201;
     } catch (error) {
