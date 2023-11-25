@@ -5,6 +5,7 @@ const Users = require('./routes/user');
 const Transactions = require('./routes/transaction');
 const Register = require('./routes/register');
 const External = require('./routes/external');
+const Auctions = require('./routes/auction');
 
 const router = new Router();
 
@@ -14,5 +15,7 @@ router.use('/users', Users.routes());
 router.use('/transactions', Transactions.routes());
 router.use('/registers', Register.routes());
 router.use('/external', External.routes());
+router.use('/auctions', Auctions.routes());
+
 
 module.exports = router;
