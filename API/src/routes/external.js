@@ -5,7 +5,7 @@ const router = new Router();
 router.get('company.show', '/', async (ctx) => {
     try {
         console.log("Hello")
-        ctx.body = {"Hello"}
+        ctx.body = "Hello"
     } catch (error) {
         console.error(consoleError, error);
         ctx.body = generalError;
