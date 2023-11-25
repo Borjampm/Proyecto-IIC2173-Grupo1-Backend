@@ -1,9 +1,9 @@
 const Router = require('koa-router');
-const { consoleError, generalError } = require('../parameters/errors.js');
-const { defaultPage, defaultSize } = require('../parameters/request.js');
-const { getStartIndex } = require('../utils/request.js');
 const mqtt = require('mqtt');
 const { v4: uuidv4 } = require('uuid');
+const { consoleError, generalError } = require('../parameters/errors.js');
+// const { defaultPage, defaultSize } = require('../parameters/request.js');
+// const { getStartIndex } = require('../utils/request.js');
 
 const router = new Router();
 
@@ -34,7 +34,8 @@ router.post('auction.create', '/new', async (ctx) => {
     try {
         const request = ctx.request.body
         console.log(request)
-        const newAuction = await ctx.orm.Auction.create({
+        // const newAuction = await ctx.orm.Auction.create({
+        await ctx.orm.Auction.create({
             auction_id: request.auction_id,
             proposal_id: request.proposal_id,
             stock_id: request.stock_id,
