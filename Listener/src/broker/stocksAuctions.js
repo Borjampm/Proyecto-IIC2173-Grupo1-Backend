@@ -8,15 +8,21 @@ function listenAuction(topic, message, url) {
     processedMessage = responseParser(message.toString())
     console.log("Auction received", processedMessage)
 
+    if (processedMessage.proposal_id == "") {
+        processedMessage.proposal_id = null;
+    }
+
     const body =
     {
         "auction_id": processedMessage.auction_id,
-        "proposal_id": processedMessage.proposal_id,
+        "proposal_id": null,
         "stock_id": processedMessage.stock_id,
         "quantity": processedMessage.quantity,
         "group_id": processedMessage.group_id,
         "type": processedMessage.type,
-    }
+    };
+
+
     console.log("Auction sent", body)
     axios
         .post(`${API_URL}/auctions/new`, body)
