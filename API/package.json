@@ -19,7 +19,8 @@
     "pg": "^8.11.3",
     "sequelize": "^6.32.1",
     "sequelize-cli": "^6.6.1",
-    "transbank-sdk": "^4.0.0"
+    "transbank-sdk": "^4.0.0",
+    "uuid": "^9.0.1"
   },
   "scripts": {
     "start": "node src/index.js",
