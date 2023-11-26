@@ -2,6 +2,7 @@ const Router = require('koa-router');
 const mqtt = require('mqtt');
 const { v4: uuidv4 } = require('uuid');
 const { consoleError, generalError } = require('../parameters/errors.js');
+const fixAuction = require('../utils/auction.js');
 // const { defaultPage, defaultSize } = require('../parameters/request.js');
 // const { getStartIndex } = require('../utils/request.js');
 
@@ -33,16 +34,29 @@ router.get('auctions.show', '/all', async (ctx) => {
 router.post('auction.create', '/new', async (ctx) => {
     try {
         const request = ctx.request.body
-        console.log(request)
+        console.log('[API] Auction received, Saving...')
+
+        console.log('BEFORE:', request)
+        const auction = fixAuction(request)
+        console.log('AFTER:', auction)
+
+        if (auction == null) {
+            console.log('[API] La Auction recibida no era válida')
+            ctx.body = generalError;
+            ctx.status = 400;
+            return
+        }
+
         // const newAuction = await ctx.orm.Auction.create({
         await ctx.orm.Auction.create({
-            auction_id: request.auction_id,
-            proposal_id: request.proposal_id,
-            stock_id: request.stock_id,
-            quantity: request.quantity,
-            group_id: request.group_id,
-            type: request.type
+            auction_id: auction.auction_id,
+            proposal_id: auction.proposal_id,
+            stock_id: auction.stock_id,
+            quantity: auction.quantity,
+            group_id: auction.group_id,
+            type: auction.type
         });
+        
         console.log('[API] Auction logged')
         ctx.status = 201;
     } catch (error) {

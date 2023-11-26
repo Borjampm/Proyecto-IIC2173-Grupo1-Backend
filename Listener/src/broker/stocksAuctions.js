@@ -5,35 +5,28 @@ const group = 1;
 const API_URL = process.env.API_URL;
 
 function listenAuction(topic, message, url) {
-    processedMessage = responseParser(message.toString())
-    console.log("Auction received", processedMessage)
-
-    if (processedMessage.proposal_id == "") {
-        processedMessage.proposal_id = null;
-    }
+    console.log(`[LISTENER ${topic}] > Recibida auction`)
+    message = responseParser(message.toString())
 
     const body =
     {
-        "auction_id": processedMessage.auction_id,
-        "proposal_id": null,
-        "stock_id": processedMessage.stock_id,
-        "quantity": processedMessage.quantity,
-        "group_id": processedMessage.group_id,
-        "type": processedMessage.type,
+        "auction_id": message.auction_id,
+        "proposal_id": message.proposal_id,
+        "stock_id": message.stock_id,
+        "quantity": message.quantity,
+        "group_id": message.group_id,
+        "type": message.type,
     };
 
-
-    console.log("Auction sent", body)
     axios
         .post(`${API_URL}/auctions/new`, body)
         .then((res) => {
-            console.log('[LISTENER stocks/validation] Response posted in API')
+            console.log(`[LISTENER ${topic}] Response posted in API`)
         })
         .catch((error) => {
-            console.error('[LISTENER stocks/validation] Error posting response in API', error)
+            console.log(`[LISTENER ${topic}] Error posting response in API`, error)
         })
 }
-
 
 module.exports = {
     listenAuction
