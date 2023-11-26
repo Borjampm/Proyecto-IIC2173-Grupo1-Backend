@@ -18,9 +18,14 @@ const client = mqtt.connect(MQTT_BROKER_URL, {
     password: MQTT_PASSWORD,
     });
 
-router.get('auctions.show', '/all', async (ctx) => {
+// show all auctions offering stocks
+router.get('auctions.show', '/offers', async (ctx) => {
     try {
-        const auctions = await ctx.orm.Auction.findAll();
+        const auctions = await ctx.orm.Auction.findAll({
+            where: {
+                type: 'offer'
+            }
+    });
         ctx.body = auctions;
         ctx.status = 200;
     } catch (error) {
@@ -30,6 +35,42 @@ router.get('auctions.show', '/all', async (ctx) => {
     }
 });
 
+// show all my proposals
+router.get('auctions.show', '/proposals', async (ctx) => {
+    try {
+        const auctions = await ctx.orm.Auction.findAll({
+            where: {
+                type: 'proposal',
+                group_id: 1
+            }
+    });
+        ctx.body = auctions;
+        ctx.status = 200;
+    } catch (error) {
+        console.error(consoleError, error);
+        ctx.body = generalError;
+        ctx.status = 400;
+    }
+});
+
+// show proposals waiting for my response
+router.get('auctions.show', '/waiting', async (ctx) => {
+    try {
+        const auctions = await ctx.orm.Auction.findAll({
+            where: {
+                type: 'proposal'
+            }
+    });
+        ctx.body = auctions;
+        ctx.status = 200;
+    } catch (error) {
+        console.error(consoleError, error);
+        ctx.body = generalError;
+        ctx.status = 400;
+    }
+});
+
+// Add a new auction to the database
 router.post('auction.create', '/new', async (ctx) => {
     try {
         const request = ctx.request.body
@@ -53,8 +94,8 @@ router.post('auction.create', '/new', async (ctx) => {
 });
 
 // Estos dos metodos no deberían ser posts, pero por ahora si lo son
-
-router.get('auction.propose', '/offer', async (ctx) => {
+// Offer a new auction
+router.get('auction.propose', '/offer-new', async (ctx) => {
     try {
         const message =  {
             "auction_id": uuidv4(),
@@ -75,6 +116,7 @@ router.get('auction.propose', '/offer', async (ctx) => {
     }
 });
 
+// Propose to an offered auction
 router.get('auction.propose', '/propose', async (ctx) => {
     try {
         console.log('posting')
@@ -97,4 +139,5 @@ router.get('auction.propose', '/propose', async (ctx) => {
     }
 });
 
+// TODO: Accept or reject proposals
 module.exports = router;
