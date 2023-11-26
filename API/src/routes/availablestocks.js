@@ -8,7 +8,13 @@ const router = new Router();
 
 router.get('stock.available', '/all', async (ctx) => {
     try {
-        ctx.body = 'Implementación Pendiente'
+        const registers = await ctx.orm.Register.findAll({
+            where: {
+                seller: 1
+            }
+        });
+
+        ctx.body = registers;
         ctx.status = 201;
     } catch (error) {
         console.error(consoleError, error);
@@ -16,7 +22,5 @@ router.get('stock.available', '/all', async (ctx) => {
         ctx.status = 400;
     }
 });
-
-
 
 module.exports = router;

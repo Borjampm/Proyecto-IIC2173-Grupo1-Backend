@@ -16,7 +16,7 @@ router.post('register.create', '/new', async (ctx) => {
             valid: false
         });
 
-        console.log('[API] Register created', ctx.body)
+        console.log('[API] Register created', register)
         ctx.body = register;
         ctx.status = 201;
     } catch (error) {

@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsTo(models.User, {foreignKey: 'Username'});
       this.belongsTo(models.Company, {foreignKey: 'CompanyId'});
+      this.hasMany(models.FractionTransaction, {foreignKey: 'id'});
     }
   }
   Transaction.init({

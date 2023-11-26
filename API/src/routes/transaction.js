@@ -17,23 +17,22 @@ const MQTT_USER = 'students';
 const MQTT_PASSWORD = 'iic2173-2023-2-students';
 
 const client = mqtt.connect(MQTT_BROKER_URL, {
-port: MQTT_PORT,
-username: MQTT_USER,
-password: MQTT_PASSWORD,
+    port: MQTT_PORT,
+    username: MQTT_USER,
+    password: MQTT_PASSWORD,
 });
 
 // Listen for MQTT connect event
 client.on('connect', () => {
-console.log('Connected to MQTT broker');
+    console.log('Connected to MQTT broker');
 });
-
 // Listen for MQTT error event
 client.on('error', (error) => {
-console.error('MQTT error:', error);
+    console.error('MQTT error:', error);
 });
+
 // Post para crear una órden de compra
 router.post('/buy', async (ctx) => {
-
     try {
         const request = ctx.request.body;
         const user = await ctx.orm.User.findOne({
@@ -77,18 +76,17 @@ router.post('/buy', async (ctx) => {
             console.log(returnURL);
             const response = await tx.create('buy_order', transaction.id, TotalAmount*100, returnURL);
             console.log(response);
-            console.log("buiiiiing")
 
             // Create broker message
             try {
                 const message = {
-                request_id: transaction.id,
-                group_id: '1',
-                symbol: company.symbol,
-                datetime: transaction.date,
-                deposit_token: response.token,
-                quantity: transaction.Quantity,
-                seller: 0,
+                    request_id: transaction.id,
+                    group_id: '1',
+                    symbol: company.symbol,
+                    datetime: transaction.date,
+                    deposit_token: response.token,
+                    quantity: transaction.Quantity,
+                    seller: 0,
                 };
                 const payload = JSON.stringify(message);
 
@@ -101,12 +99,89 @@ router.post('/buy', async (ctx) => {
                 ctx.body = { error: 'Failed to publish MQTT message' };
             }
 
-            // ctx.status = 200;
-            // ctx.body = { message: 'MQTT message published successfully' };
-            // ctx.body = transaction;
             ctx.status = 200;
             ctx.body = response;
         }
+    } catch (error) {
+        console.log(error)
+        ctx.body = error;
+        ctx.status = 400;
+    }
+});
+
+router.post('/buy/admin', async (ctx) => {
+    try {
+        const request = ctx.request.body;
+        const user = await ctx.orm.User.findOne({
+            where: {
+                Username: request.Username
+            }
+        });
+        const company = await ctx.orm.Company.findOne({
+            where: {
+                symbol: request.Symbol
+            }
+        });
+        const TotalAmount = request.Price * request.Quantity;
+        console.log("TOTAL AMOUNT", TotalAmount)
+
+        // Create Transaction
+        const transaction = await ctx.orm.Transaction.create({
+            Username: user.Username,
+            CompanyId: company.id,
+            Price: request.Price,
+            Currency: "USD",
+            TotalAmount,
+            Quantity: request.Quantity,
+            Date: new Date().toISOString(),
+            Completed: false,
+            ipAdress: request.IPAddres,
+            UserId: user.id
+        });
+
+        // Webpay implementation
+        const tx = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration));
+        console.log('attempting webpay')
+        const returnURL = `${process.env.FRONT_URL}/validate-transaction`;
+        console.log(returnURL);
+        const response = await tx.create('buy_order', transaction.id, TotalAmount*100, returnURL);
+        console.log(response);
+
+        const profit = TotalAmount * 0.3;
+
+        // Create Fraction Stock
+        await ctx.orm.FractionStock.create({
+            source_transaction_id: transaction.id,
+            company_id: company.id,
+            avalible: request.Quantity * 1.0,
+            bought: 0.0,
+            price: (request.Price + profit) / 10
+        });
+
+        // Create broker message
+        try {
+            const message = {
+                request_id: transaction.id,
+                group_id: '1',
+                symbol: company.symbol,
+                datetime: transaction.date,
+                deposit_token: response.token,
+                quantity: transaction.Quantity,
+                seller: 1,
+            };
+            const payload = JSON.stringify(message);
+
+            // Publish the message to the MQTT topic_requests
+            client.publish(topicRequests, payload);
+            console.log("works?")
+        } catch (error) {
+            console.error('Error publishing MQTT message:', error);
+            ctx.status = 500;
+            ctx.body = { error: 'Failed to publish MQTT message' };
+        }
+
+        ctx.status = 200;
+        ctx.body = response;
     } catch (error) {
         console.log(error)
         ctx.body = error;
@@ -132,10 +207,10 @@ router.post('/webpay-result', async (ctx) => {
             await transaction.save();
             try {
                 const message = {
-                request_id: transaction.id,
-                group_id: '1',
-                seller: 0,
-                valid: transaction.Completed
+                    request_id: transaction.id,
+                    group_id: '1',
+                    seller: 0,
+                    valid: transaction.Completed
                 };
                 const payload = JSON.stringify(message);
 

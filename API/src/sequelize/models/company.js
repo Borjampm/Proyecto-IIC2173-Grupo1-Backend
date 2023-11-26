@@ -14,6 +14,12 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.CompanyStock, {
         foreignKey: 'id',
       });
+      this.hasMany(models.Transaction, {
+        foreignKey: 'id',
+      });
+      this.hasMany(models.FractionStock, {
+        foreignKey: 'id',
+      });
     }
   }
   Company.init({
