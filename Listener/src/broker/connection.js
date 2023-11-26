@@ -22,7 +22,7 @@ function connectToBroker() {
         suscribe(URL, client, 'stocks/info');
         suscribe(URL, client, 'stocks/validation');
         suscribe(URL, client, 'stocks/requests');
-        suscribe(URL, client, 'stocks/auctions');
+        // suscribe(URL, client, 'stocks/auctions');
     })
 
     client.on('message', function (topic, message) {
