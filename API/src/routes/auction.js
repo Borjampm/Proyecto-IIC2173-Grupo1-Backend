@@ -95,7 +95,7 @@ router.post('auction.create', '/new', async (ctx) => {
 
 // Estos dos metodos no deberían ser posts, pero por ahora si lo son
 // Offer a new auction
-router.get('auction.propose', '/offer-new', async (ctx) => {
+router.post('auction.propose', '/offer-new', async (ctx) => {
     try {
         const message =  {
             "auction_id": uuidv4(),
@@ -117,14 +117,15 @@ router.get('auction.propose', '/offer-new', async (ctx) => {
 });
 
 // Propose to an offered auction
-router.get('auction.propose', '/propose', async (ctx) => {
+router.post('auction.propose', '/propose', async (ctx) => {
     try {
         console.log('posting')
+        const request = ctx.request.body
         const message =  {
-            "auction_id": 1234,
-            "proposal_id": "",
-            "stock_id": 1234,
-            "quantity": 2,
+            "auction_id": request.auction_id,
+            "proposal_id": uuidv4(),
+            "stock_id": request.stock_id,
+            "quantity": request.quantity,
             "group_id": 1,
             "type": "proposal"
         };
