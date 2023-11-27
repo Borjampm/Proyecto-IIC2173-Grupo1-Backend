@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4
     },
-    amount: DataTypes.INTEGER
+    amount: DataTypes.FLOAT
   }, {
     sequelize,
     modelName: 'AvailableStock',

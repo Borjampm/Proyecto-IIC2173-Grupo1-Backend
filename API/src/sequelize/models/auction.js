@@ -19,7 +19,9 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.UUID,
     },
-    proposal_id: DataTypes.UUID,
+    proposal_id: {
+      type: DataTypes.UUID,
+    },
     stock_id: DataTypes.UUID,
     quantity: DataTypes.INTEGER,
     group_id: DataTypes.INTEGER,
