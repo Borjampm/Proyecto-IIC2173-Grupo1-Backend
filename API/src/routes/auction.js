@@ -75,18 +75,33 @@ router.post('auction.create', '/save', async (ctx) => {
                     // handle other acceptance
                     console.log('[Proposals] Saved my accepted proposal by other group')
                 } else {
-                    // handle my acceptance
-                    await ctx.orm.Proposal.update({
-                        state: 'accepted'
-                    }, {
+                    // find proposal
+                    const Proposal = await ctx.orm.Proposal.findOne({
                         where: {
                             proposal_id: request.proposal_id
                         }
                     });
+                    // update proposal
+                    Proposal.state = 'accepted';
+                    await Proposal.save();
                     // update auction
                     auction.state = 'accepted';
                     await auction.save();
                     // update amount of stocks
+                    const offeredStocks = await ctx.orm.AvailableStock.findOne({
+                        where: {
+                            stock_id: auction.stock_id
+                        }
+                    });
+                    offeredStocks.amount -= auction.quantity;
+                    await offeredStocks.save();
+                    const proposedStocks = await ctx.orm.AvailableStock.findOne({
+                        where: {
+                            stock_id: Proposal.offered_stock
+                        }
+                    });
+                    proposedStocks.amount += auction.quantity;
+                    await proposedStocks.save();
                     console.log('[Proposals] Saved my accepted proposal by me')
                 }
             }
