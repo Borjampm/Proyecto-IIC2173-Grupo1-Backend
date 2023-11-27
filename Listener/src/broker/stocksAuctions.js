@@ -15,7 +15,7 @@ function listenAuction(topic, message, url) {
     const body =
     {
         "auction_id": processedMessage.auction_id,
-        "proposal_id": null,
+        "proposal_id": processedMessage.proposal_id,
         "stock_id": processedMessage.stock_id,
         "quantity": processedMessage.quantity,
         "group_id": processedMessage.group_id,

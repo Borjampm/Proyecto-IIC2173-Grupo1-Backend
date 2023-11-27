@@ -131,6 +131,38 @@ router.post('auction.propose', '/propose', async (ctx) => {
         };
         const payload = JSON.stringify(message);
         client.publish('stocks/auctions', payload);
+        // find auction and update proposal_id
+        const auction = await ctx.orm.Auction.findOne({
+            where: {
+                auction_id: request.auction_id
+            }
+        });
+        auction.proposal_id = message.proposal_id;
+        auction.type = 'proposal';
+        await auction.save();
+        ctx.body = message;
+        ctx.status = 201;
+    } catch (error) {
+        console.error(consoleError, error);
+        ctx.body = generalError;
+        ctx.status = 400;
+    }
+});
+
+// Test offer
+router.get('auction.propose', '/test', async (ctx) => {
+    try {
+        console.log('posting')
+        const message =  {
+            "auction_id": uuidv4(),
+            "proposal_id": '483013b8-c88f-473f-9067-070fd636dca9',
+            "stock_id": uuidv4(),
+            "quantity": 2,
+            "group_id": 1,
+            "type": "offer"
+        };
+        const payload = JSON.stringify(message);
+        client.publish('stocks/auctions', payload);
         ctx.body = message;
         ctx.status = 201;
     } catch (error) {
