@@ -18,6 +18,115 @@ const client = mqtt.connect(MQTT_BROKER_URL, {
     password: MQTT_PASSWORD,
     });
 
+
+// NEW ENDPOINT ---------------------------
+
+// Add auction to database
+router.post('auction.create', '/save', async (ctx) => {
+    try {
+        const request = ctx.request.body
+        console.log(request)
+        if (request.type === "offer") {
+            await ctx.orm.Auction.create({
+                auction_id: request.auction_id,
+                proposal_id: request.proposal_id,
+                stock_id: request.stock_id,
+                quantity: request.quantity,
+                group_id: request.group_id,
+                type: request.type
+            });
+            console.log('[Proposals] Saved offer')
+        } else if (request.type === "proposal") {
+            // check if auction exists, if not, ignore
+            const auction = await ctx.orm.Auction.findOne({
+                where: {
+                    auction_id: request.auction_id
+                }
+            });
+            if (auction) {
+                // check if group is 1
+                if (request.group_id === 1) {
+                    // handle my proposal
+                    console.log('[Proposals] Saved my proposal')
+                } else {
+                    // handle other proposal
+                    await ctx.orm.Proposal.create({
+                        proposal_id: request.proposal_id,
+                        auction_id: request.auction_id,
+                        offered_stock: request.stock_id,
+                        offered_quantity: request.quantity,
+                        group_id: request.group_id,
+                        state: 'waiting'
+                    });
+
+                    console.log('[Proposals] Saved other proposal')
+                }
+            }
+        } else if (request.type === "acceptance") {
+            // check if auction exists, if not, ignore
+            const auction = await ctx.orm.Auction.findOne({
+                where: {
+                    auction_id: request.auction_id
+                }
+            });
+            if (auction) {
+                // check if group is 1
+                if (request.group_id === 1) {
+                    // handle other acceptance
+                    console.log('[Proposals] Saved my accepted proposal by other group')
+                } else {
+                    // handle my acceptance
+                    await ctx.orm.Proposal.update({
+                        state: 'accepted'
+                    }, {
+                        where: {
+                            proposal_id: request.proposal_id
+                        }
+                    });
+                    // update auction
+                    auction.state = 'accepted';
+                    await auction.save();
+                    // update amount of stocks
+                    console.log('[Proposals] Saved my accepted proposal by me')
+                }
+            }
+        }
+        ctx.status = 201;
+    } catch (error) {
+        console.error(consoleError, error);
+        ctx.body = generalError;
+        ctx.status = 400;
+    }
+});
+
+// Send auction to broker
+router.post('auction.create', '/send', async (ctx) => {
+    try {
+        const request = ctx.request.body
+        const message =  {
+            "auction_id": request.auction_id,
+            "proposal_id": request.proposal_id,
+            "stock_id": request.stock_id,
+            "quantity": request.quantity,
+            "group_id": request.group_id,
+            "type": request.type
+        };
+        const payload = JSON.stringify(message);
+        client.publish('stocks/auctions', payload);
+        console.log('[API] Auction sent')
+        ctx.status = 201;
+    } catch (error) {
+        console.error(consoleError, error);
+        ctx.body = generalError;
+        ctx.status = 400;
+    }
+});
+
+
+
+
+// OLD ENDPOINT ---------------------------
+
 // show all auctions offering stocks
 router.get('auctions.show', '/offers', async (ctx) => {
     try {
@@ -71,27 +180,27 @@ router.get('auctions.show', '/waiting', async (ctx) => {
 });
 
 // Add a new auction to the database
-router.post('auction.create', '/new', async (ctx) => {
-    try {
-        const request = ctx.request.body
-        console.log(request)
-        // const newAuction = await ctx.orm.Auction.create({
-        await ctx.orm.Auction.create({
-            auction_id: request.auction_id,
-            proposal_id: request.proposal_id,
-            stock_id: request.stock_id,
-            quantity: request.quantity,
-            group_id: request.group_id,
-            type: request.type
-        });
-        console.log('[API] Auction logged')
-        ctx.status = 201;
-    } catch (error) {
-        console.error(consoleError, error);
-        ctx.body = generalError;
-        ctx.status = 400;
-    }
-});
+// router.post('auction.create', '/new', async (ctx) => {
+//     try {
+//         const request = ctx.request.body
+//         console.log(request)
+//         // const newAuction = await ctx.orm.Auction.create({
+//         await ctx.orm.Auction.create({
+//             auction_id: request.auction_id,
+//             proposal_id: request.proposal_id,
+//             stock_id: request.stock_id,
+//             quantity: request.quantity,
+//             group_id: request.group_id,
+//             type: request.type
+//         });
+//         console.log('[API] Auction logged')
+//         ctx.status = 201;
+//     } catch (error) {
+//         console.error(consoleError, error);
+//         ctx.body = generalError;
+//         ctx.status = 400;
+//     }
+// });
 
 // Estos dos metodos no deberían ser posts, pero por ahora si lo son
 // Offer a new auction

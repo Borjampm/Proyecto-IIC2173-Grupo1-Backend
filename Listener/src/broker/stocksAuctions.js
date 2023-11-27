@@ -22,17 +22,17 @@ function listenAuction(topic, message, url) {
         "type": processedMessage.type,
     };
 
-    if (processedMessage.group_id == "1") {
+    if (processedMessage.group_id == "1" || processedMessage.group_id == "2") {
+    }
         console.log("Auction sent", body)
         axios
-            .post(`${API_URL}/auctions/new`, body)
+            .post(`${API_URL}/auctions/save`, body)
             .then((res) => {
                 console.log('[LISTENER stocks/validation] Response posted in API')
             })
             .catch((error) => {
                 console.error('[LISTENER stocks/validation] Error posting response in API', error)
             })
-        }
 
 }
 
