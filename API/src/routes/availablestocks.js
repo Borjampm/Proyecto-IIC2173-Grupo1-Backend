@@ -8,7 +8,8 @@ const router = new Router();
 
 router.get('stock.available', '/all', async (ctx) => {
     try {
-        ctx.body = 'Implementación Pendiente'
+        const stocks = await ctx.orm.AvailableStock.findAll();
+        ctx.body = stocks;
         ctx.status = 201;
     } catch (error) {
         console.error(consoleError, error);
