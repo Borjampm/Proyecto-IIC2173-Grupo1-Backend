@@ -129,7 +129,7 @@ router.post('/admin/buy', async (ctx) => {
             }
         });
 
-        const TotalAmount = request.Price * request.Quantity;
+        const TotalAmount = parseInt(request.Price * request.Quantity);
         
         const transaction = await ctx.orm.Transaction.create({
             Username: user.Username,
@@ -340,8 +340,6 @@ router.post('/validate', async (ctx) => {
     }
 });
 
-
-
 router.get('transiction.user', '/:username', async (ctx) => {
     try {
 
@@ -374,10 +372,6 @@ router.get('transiction.user', '/:username', async (ctx) => {
         ctx.status = 400;
     }
 });
-
-
-
-
 
 
 
