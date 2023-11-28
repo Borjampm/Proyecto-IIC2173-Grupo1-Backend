@@ -18,6 +18,22 @@ router.get('stock.available', '/all', async (ctx) => {
     }
 });
 
+// add a new stock to the available stocks
+router.post('stock.available', '/add', async (ctx) => {
+    try {
+        const request = ctx.request.body;
+        const stock = await ctx.orm.AvailableStock.create({
+            stock_id: request.stock_id,
+            amount: request.amount,
+        });
+        ctx.body = stock;
+        ctx.status = 201;
+    } catch (error) {
+        console.error(consoleError, error);
+        ctx.body = generalError;
+        ctx.status = 400;
+    }
+});
 
 
 module.exports = router;

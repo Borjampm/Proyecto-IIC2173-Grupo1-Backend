@@ -2,16 +2,19 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Auctions', {
-      auction_id: {
+    await queryInterface.createTable('Proposals', {
+      proposal_id: {
+        allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4
       },
-      stock_id: {
-        type: Sequelize.STRING,
+      auction_id: {
+        type: Sequelize.UUID
       },
-      quantity: {
+      offered_stock: {
+        type: Sequelize.STRING
+      },
+      offered_quantity: {
         type: Sequelize.INTEGER
       },
       group_id: {
@@ -20,9 +23,6 @@ module.exports = {
       state: {
         type: Sequelize.STRING,
         defaultValue: 'waiting'
-      },
-      type: {
-        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
@@ -35,6 +35,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Auctions');
+    await queryInterface.dropTable('Proposals');
   }
 };
