@@ -9,7 +9,7 @@ module.exports = {
         defaultValue: Sequelize.UUIDV4
       },
       stock_id: {
-        type: Sequelize.UUID,
+        type: Sequelize.STRING,
       },
       quantity: {
         type: Sequelize.INTEGER

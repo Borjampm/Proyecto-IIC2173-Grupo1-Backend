@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.UUID,
     },
-    stock_id: DataTypes.UUID,
+    stock_id: DataTypes.STRING,
     quantity: DataTypes.INTEGER,
     group_id: DataTypes.INTEGER,
     state: {

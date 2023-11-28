@@ -12,7 +12,7 @@ module.exports = {
         type: Sequelize.UUID
       },
       offered_stock: {
-        type: Sequelize.UUID
+        type: Sequelize.STRING
       },
       offered_quantity: {
         type: Sequelize.INTEGER

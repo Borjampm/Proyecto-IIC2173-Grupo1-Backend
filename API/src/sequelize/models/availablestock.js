@@ -17,8 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     stock_id: {
       allowNull: false,
       primaryKey: true,
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4
+      type: DataTypes.STRING
     },
     amount: DataTypes.FLOAT
   }, {

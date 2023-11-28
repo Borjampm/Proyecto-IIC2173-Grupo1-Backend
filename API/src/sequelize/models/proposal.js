@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
     },
     auction_id: DataTypes.UUID,
-    offered_stock: DataTypes.UUID,
+    offered_stock: DataTypes.STRING,
     offered_quantity: DataTypes.INTEGER,
     group_id: DataTypes.INTEGER,
     state: {

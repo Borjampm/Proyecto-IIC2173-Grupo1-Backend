@@ -22,8 +22,7 @@ function listenAuction(topic, message, url) {
         "type": processedMessage.type,
     };
 
-    if (processedMessage.group_id == "1" || processedMessage.group_id == "2") {
-    }
+
         console.log("Auction sent", body)
         axios
             .post(`${API_URL}/auctions/save`, body)

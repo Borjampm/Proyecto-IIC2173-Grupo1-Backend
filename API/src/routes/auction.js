@@ -75,6 +75,17 @@ router.post('auction.create', '/save', async (ctx) => {
                     // handle other acceptance
                     console.log('[Proposals] Saved my accepted proposal by other group')
                 } else {
+                    // find all proposals
+                    const proposals = await ctx.orm.Proposal.findAll({
+                        where: {
+                            auction_id: request.auction_id
+                        }
+                    });
+                    // update all proposals
+                    for (let i = 0; i < proposals.length; i++) {
+                        proposals[i].state = 'rejection';
+                        await proposals[i].save();
+                    }
                     // find proposal
                     const Proposal = await ctx.orm.Proposal.findOne({
                         where: {
@@ -103,6 +114,30 @@ router.post('auction.create', '/save', async (ctx) => {
                     proposedStocks.amount += auction.quantity;
                     await proposedStocks.save();
                     console.log('[Proposals] Saved my accepted proposal by me')
+                }
+            }
+        } else {
+            // check if auction exists, if not, ignore
+            const auction = await ctx.orm.Auction.findOne({
+                where: {
+                    auction_id: request.auction_id
+                }
+            });
+            if (auction) {
+                // check if group is 1
+                if (request.group_id === 1) {
+                    // handle other rejection
+                    console.log('[Proposals] Saved my rejected proposal by other group')
+                } else {
+                    // update proposal to rejected
+                    const Proposal = await ctx.orm.Proposal.findOne({
+                        where: {
+                            proposal_id: request.proposal_id
+                        }
+                    });
+                    Proposal.state = 'rejection';
+                    await Proposal.save();
+                    console.log('[Proposals] Saved my rejected proposal by me')
                 }
             }
         }
@@ -296,5 +331,4 @@ router.get('auction.propose', '/test', async (ctx) => {
     }
 });
 
-// TODO: Accept or reject proposals
 module.exports = router;
