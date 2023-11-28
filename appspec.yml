@@ -1,0 +1,18 @@
+version: 0.0
+os: linux
+files:
+  - source: docker-compose.production.yml
+    destination: /home/ubuntu/
+  - source: scripts
+    destination: /home/ubuntu/scripts
+
+hooks:
+  ApplicationStop:
+    - location: ./scripts/application-stop.sh
+      timeout: 10000
+  AfterInstall:
+    - location: ./scripts/after-install.sh
+      timeout: 3000
+  ApplicationStart:
+    - location: ./scripts/application-start.sh
+      timeout: 3000
