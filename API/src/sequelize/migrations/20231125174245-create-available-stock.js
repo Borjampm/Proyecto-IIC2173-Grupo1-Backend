@@ -5,8 +5,7 @@ module.exports = {
     await queryInterface.createTable('AvailableStocks', {
       stock_id: {
         primaryKey: true,
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4
+        type: Sequelize.STRING,
       },
       amount: {
         type: Sequelize.FLOAT

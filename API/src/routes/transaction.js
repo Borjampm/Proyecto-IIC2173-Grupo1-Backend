@@ -260,19 +260,6 @@ router.post('/admin/webpay-result', async (ctx) => {
                 id: transaction.CompanyId
             }
         });
-        console.log(company, "company")
-        const CompanyStock = await ctx.orm.CompanyStock.findOne({
-            where: {
-                companyId: company.id
-            }
-        });
-        console.log(CompanyStock, "company stock")
-        const Stock = await ctx.orm.Stock.findOne({
-            where: {
-                id: CompanyStock.stockId
-            }
-        });
-        console.log(Stock, "stock")
         if (response.vci == 'TSY') {
             transaction.Completed = true;
             await transaction.save();
@@ -292,7 +279,7 @@ router.post('/admin/webpay-result', async (ctx) => {
                 // add stock to availablestocks
                 const availableStock = await ctx.orm.AvailableStock.findOne({
                     where: {
-                        stock_id: Stock.stocksId
+                        stock_id: company.symbol
                     }
                 });
                 if (availableStock) {
@@ -300,7 +287,7 @@ router.post('/admin/webpay-result', async (ctx) => {
                     await availableStock.save();
                 } else {
                     await ctx.orm.AvailableStock.create({
-                        stock_id: Stock.stocksId,
+                        stock_id: company.symbol,
                         amount: transaction.Quantity
                     });
                 }

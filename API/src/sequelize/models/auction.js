@@ -19,12 +19,13 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.UUID,
     },
-    proposal_id: {
-      type: DataTypes.UUID,
-    },
-    stock_id: DataTypes.UUID,
+    stock_id: DataTypes.STRING,
     quantity: DataTypes.INTEGER,
     group_id: DataTypes.INTEGER,
+    state: {
+      type: DataTypes.STRING,
+      defaultValue: 'waiting'
+    },
     type: DataTypes.STRING
   }, {
     sequelize,
