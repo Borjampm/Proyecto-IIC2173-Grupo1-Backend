@@ -187,6 +187,78 @@ router.post('/admin/buy', async (ctx) => {
     }
 });
 
+router.post('/fraction/buy', async (ctx) => {
+    try {
+        const request = ctx.request.body;
+        const user = await ctx.orm.User.findOne({
+            where: {
+                Username: request.Username
+            }
+        });
+        const company = await ctx.orm.Company.findOne({
+            where: {
+                symbol: request.Symbol
+            }
+        });
+
+        const TotalAmount = parseInt(request.Price * request.Quantity);
+        
+        const transaction = await ctx.orm.Transaction.create({
+            Username: user.Username,
+            CompanyId: company.id,
+            Price: request.Price,
+            Currency: "USD",
+            TotalAmount,
+            Quantity: request.Quantity,
+            Date: new Date().toISOString(),
+            Completed: false,
+            ipAdress: request.IPAddres,
+            UserId: user.id
+        });
+
+        // Webpay implementation
+        const tx = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration));
+        console.log('attempting webpay')
+        const returnURL = `${process.env.FRONT_URL}/validate-transaction`;
+        console.log(returnURL);
+        const response = await tx.create('buy_order', transaction.id, TotalAmount*100, returnURL);
+        console.log(response);
+        console.log("buiiiiing")
+
+        // Create broker message
+        try {
+            const message = {
+                request_id: transaction.id,
+                group_id: '1',
+                symbol: company.symbol,
+                datetime: transaction.date,
+                deposit_token: response.token,
+                quantity: transaction.Quantity,
+                seller: 1,
+            };
+            const payload = JSON.stringify(message);
+
+            // Publish the message to the MQTT topic_requests
+            client.publish(topicRequests, payload);
+            console.log("works?")
+        } catch (error) {
+            console.error('Error publishing MQTT message:', error);
+            ctx.status = 500;
+            ctx.body = { error: 'Failed to publish MQTT message' };
+        }
+
+        // ctx.status = 200;
+        // ctx.body = { message: 'MQTT message published successfully' };
+        // ctx.body = transaction;
+        ctx.status = 200;
+        ctx.body = response;
+    } catch (error) {
+        console.log(error)
+        ctx.body = error;
+        ctx.status = 400;
+    }
+});
+
 router.post('/webpay-result', async (ctx) => {
     try {
         console.log("Checking status")
