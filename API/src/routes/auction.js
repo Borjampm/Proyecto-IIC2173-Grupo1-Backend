@@ -19,7 +19,7 @@ const client = mqtt.connect(MQTT_BROKER_URL, {
     });
 
 
-// NEW ENDPOINT ---------------------------
+// NEW ENDPOINTS ---------------------------
 
 // Add auction to database
 router.post('auction.create', '/save', async (ctx) => {
@@ -35,6 +35,7 @@ router.post('auction.create', '/save', async (ctx) => {
                 group_id: request.group_id,
                 type: request.type
             });
+            ctx.body = "Offer saved";
             console.log('[Proposals] Saved offer')
         } else if (request.type === "proposal") {
             // check if auction exists, if not, ignore
@@ -46,7 +47,16 @@ router.post('auction.create', '/save', async (ctx) => {
             if (auction) {
                 // check if group is 1
                 if (request.group_id === 1) {
-                    // handle my proposal
+                    // save proposal
+                    await ctx.orm.Proposal.create({
+                        proposal_id: request.proposal_id,
+                        auction_id: request.auction_id,
+                        offered_stock: request.stock_id,
+                        offered_quantity: request.quantity,
+                        group_id: request.group_id,
+                        state: 'waiting'
+                    });
+                    ctx.body = "My proposal saved";
                     console.log('[Proposals] Saved my proposal')
                 } else {
                     // handle other proposal
@@ -58,7 +68,7 @@ router.post('auction.create', '/save', async (ctx) => {
                         group_id: request.group_id,
                         state: 'waiting'
                     });
-
+                    ctx.body = "Proposal saved";
                     console.log('[Proposals] Saved other proposal')
                 }
             }
@@ -113,6 +123,7 @@ router.post('auction.create', '/save', async (ctx) => {
                     });
                     proposedStocks.amount += auction.quantity;
                     await proposedStocks.save();
+                    ctx.body = "Proposal accepted";
                     console.log('[Proposals] Saved my accepted proposal by me')
                 }
             }
@@ -126,7 +137,15 @@ router.post('auction.create', '/save', async (ctx) => {
             if (auction) {
                 // check if group is 1
                 if (request.group_id === 1) {
-                    // handle other rejection
+                    // update proposal to rejected
+                    const Proposal = await ctx.orm.Proposal.findOne({
+                        where: {
+                            proposal_id: request.proposal_id
+                        }
+                    });
+                    Proposal.state = 'rejection';
+                    await Proposal.save();
+                    ctx.body = "My proposal was rejected";
                     console.log('[Proposals] Saved my rejected proposal by other group')
                 } else {
                     // update proposal to rejected
@@ -137,6 +156,7 @@ router.post('auction.create', '/save', async (ctx) => {
                     });
                     Proposal.state = 'rejection';
                     await Proposal.save();
+                    ctx.body = "Proposal rejected";
                     console.log('[Proposals] Saved my rejected proposal by me')
                 }
             }
@@ -146,6 +166,26 @@ router.post('auction.create', '/save', async (ctx) => {
         console.error(consoleError, error);
         ctx.body = generalError;
         ctx.status = 400;
+    }
+});
+
+// Show offers from other groups
+router.get('auctions.show', '/offers', async (ctx) => {
+    try {
+        // find all offers from other groups
+        const auctions = await ctx.orm.Auction.findAll({
+            where: {
+                type: 'offer',
+                group_id: {
+                    [ctx.orm.Sequelize.Op.ne]: 1
+                }
+            }
+
+    });
+        ctx.body = auctions;
+        ctx.status = 200;
+    } catch (error) {
+        console.error(consoleError, error);
     }
 });
 
@@ -175,7 +215,7 @@ router.post('auction.create', '/send', async (ctx) => {
 
 
 
-// OLD ENDPOINT ---------------------------
+// OLD ENDPOINTS ---------------------------
 
 // show all auctions offering stocks
 router.get('auctions.show', '/offers', async (ctx) => {
