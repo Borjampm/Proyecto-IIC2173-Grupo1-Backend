@@ -105,14 +105,22 @@ router.post('auction.create', '/save', async (ctx) => {
                     // update auction
                     auction.state = 'accepted';
                     await auction.save();
-                    // update amount of stocks
+                    // check if stock exists, if not, create
                     const offeredStocks = await ctx.orm.AvailableStock.findOne({
                         where: {
                             stock_id: auction.stock_id
                         }
                     });
-                    offeredStocks.amount += auction.quantity;
-                    await offeredStocks.save();
+                    if (offeredStocks) {
+                        offeredStocks.amount += auction.quantity;
+                        await offeredStocks.save();
+                    } else {
+                        await ctx.orm.AvailableStock.create({
+                            stock_id: auction.stock_id,
+                            amount: auction.quantity
+                        });
+                    }
+                    // check if stock exists, if not, create
                     const proposedStocks = await ctx.orm.AvailableStock.findOne({
                         where: {
                             stock_id: Proposal.offered_stock
@@ -120,6 +128,9 @@ router.post('auction.create', '/save', async (ctx) => {
                     });
                     proposedStocks.amount -= auction.quantity;
                     await proposedStocks.save();
+                    // mark auction as completed
+                    auction.state = 'completed';
+                    await auction.save();
                     ctx.body = "My proposal was accepted";
                     console.log('[Proposals] Saved my accepted proposal by other group')
                 } else {
@@ -154,13 +165,21 @@ router.post('auction.create', '/save', async (ctx) => {
                     });
                     offeredStocks.amount -= auction.quantity;
                     await offeredStocks.save();
+                    // check if stock exists, if not, create
                     const proposedStocks = await ctx.orm.AvailableStock.findOne({
                         where: {
                             stock_id: Proposal.offered_stock
                         }
                     });
-                    proposedStocks.amount += auction.quantity;
-                    await proposedStocks.save();
+                    if (proposedStocks) {
+                        proposedStocks.amount += Proposal.offered_quantity;
+                        await proposedStocks.save();
+                    } else {
+                        await ctx.orm.AvailableStock.create({
+                            stock_id: Proposal.offered_stock,
+                            amount: Proposal.offered_quantity
+                        });
+                    }
                     ctx.body = "Proposal accepted";
                     console.log('[Proposals] Saved my accepted proposal by me')
                 }
@@ -207,8 +226,24 @@ router.post('auction.create', '/save', async (ctx) => {
     }
 });
 
+// Show specific auction
+router.get('auctions.showspecific', '/show/:auction_id', async (ctx) => {
+    try {
+        // find auction
+        const auction = await ctx.orm.Auction.findOne({
+            where: {
+                auction_id: ctx.params.auction_id
+            }
+    });
+        ctx.body = auction;
+        ctx.status = 200;
+    } catch (error) {
+        console.error(consoleError, error);
+    }
+});
+
 // Show offers from other groups
-router.get('auctions.show', '/offers', async (ctx) => {
+router.get('auctions.showothers', '/offers', async (ctx) => {
     try {
         // find all offers from other groups
         const auctions = await ctx.orm.Auction.findAll({
@@ -228,13 +263,14 @@ router.get('auctions.show', '/offers', async (ctx) => {
 });
 
 // Show offers from my group
-router.get('auctions.show', '/my-offers', async (ctx) => {
+router.get('auctions.showmine', '/my-offers', async (ctx) => {
     try {
         // find all offers from other groups
         const auctions = await ctx.orm.Auction.findAll({
             where: {
                 type: 'offer',
-                group_id: 1
+                group_id: 1,
+                state: 'waiting'
             }
 
     });
@@ -251,7 +287,8 @@ router.get('auctions.show', '/proposals/:auction_id', async (ctx) => {
         // find all proposals for a specific offer
         const proposals = await ctx.orm.Proposal.findAll({
             where: {
-                auction_id: ctx.params.auction_id
+                auction_id: ctx.params.auction_id,
+                state: 'waiting'
             }
     });
         ctx.body = proposals;
