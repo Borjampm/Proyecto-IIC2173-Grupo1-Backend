@@ -82,7 +82,45 @@ router.post('auction.create', '/save', async (ctx) => {
             if (auction) {
                 // check if group is 1
                 if (request.group_id === 1) {
-                    // handle other acceptance
+                    // find all proposals
+                    const proposals = await ctx.orm.Proposal.findAll({
+                        where: {
+                            auction_id: request.auction_id
+                        }
+                    });
+                    // update all proposals
+                    for (let i = 0; i < proposals.length; i++) {
+                        proposals[i].state = 'rejection';
+                        await proposals[i].save();
+                    }
+                    // find proposal
+                    const Proposal = await ctx.orm.Proposal.findOne({
+                        where: {
+                            proposal_id: request.proposal_id
+                        }
+                    });
+                    // update proposal
+                    Proposal.state = 'accepted';
+                    await Proposal.save();
+                    // update auction
+                    auction.state = 'accepted';
+                    await auction.save();
+                    // update amount of stocks
+                    const offeredStocks = await ctx.orm.AvailableStock.findOne({
+                        where: {
+                            stock_id: auction.stock_id
+                        }
+                    });
+                    offeredStocks.amount += auction.quantity;
+                    await offeredStocks.save();
+                    const proposedStocks = await ctx.orm.AvailableStock.findOne({
+                        where: {
+                            stock_id: Proposal.offered_stock
+                        }
+                    });
+                    proposedStocks.amount -= auction.quantity;
+                    await proposedStocks.save();
+                    ctx.body = "My proposal was accepted";
                     console.log('[Proposals] Saved my accepted proposal by other group')
                 } else {
                     // find all proposals
