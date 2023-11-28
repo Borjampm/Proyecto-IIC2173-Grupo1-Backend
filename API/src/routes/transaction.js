@@ -225,28 +225,6 @@ router.post('/fraction/buy', async (ctx) => {
         console.log(response);
         console.log("buiiiiing")
 
-        // Create broker message
-        try {
-            const message = {
-                request_id: transaction.id,
-                group_id: '1',
-                symbol: company.symbol,
-                datetime: transaction.date,
-                deposit_token: response.token,
-                quantity: transaction.Quantity,
-                seller: 1,
-            };
-            const payload = JSON.stringify(message);
-
-            // Publish the message to the MQTT topic_requests
-            client.publish(topicRequests, payload);
-            console.log("works?")
-        } catch (error) {
-            console.error('Error publishing MQTT message:', error);
-            ctx.status = 500;
-            ctx.body = { error: 'Failed to publish MQTT message' };
-        }
-
         // ctx.status = 200;
         // ctx.body = { message: 'MQTT message published successfully' };
         // ctx.body = transaction;
@@ -374,6 +352,73 @@ router.post('/admin/webpay-result', async (ctx) => {
                 console.error('Error publishing MQTT message:', error);
                 ctx.status = 500;
                 ctx.body = { error: 'Failed to publish MQTT message' };
+            }
+        }
+
+    } catch (error) {
+        console.log(error, "error api")
+        ctx.body = error;
+        ctx.status = 400;
+    }
+});
+
+router.post('/fraction/webpay-result', async (ctx) => {
+    try {
+        console.log("Checking status")
+        const request = ctx.request.body;
+        console.log(request);
+        const tx = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration));
+        const response = await tx.status(request.Token);
+        console.log(response);
+        const transaction = await ctx.orm.Transaction.findOne({
+            where: {
+                id: response.session_id
+            }
+        });
+        const company = await ctx.orm.Company.findOne({
+            where: {
+                id: transaction.CompanyId
+            }
+        });
+        console.log(company, "company")
+        const CompanyStock = await ctx.orm.CompanyStock.findOne({
+            where: {
+                companyId: company.id
+            }
+        });
+        console.log(CompanyStock, "company stock")
+        const Stock = await ctx.orm.Stock.findOne({
+            where: {
+                id: CompanyStock.stockId
+            }
+        });
+        console.log(Stock, "stock")
+        if (response.vci == 'TSY') {
+            transaction.Completed = true;
+            await transaction.save();
+            try {
+                // remove from available stocks
+                const availableStock = await ctx.orm.AvailableStock.findOne({
+                    where: {
+                        stock_id: Stock.stocksId
+                    }
+                });
+                if (availableStock) {
+                    availableStock.amount -= transaction.Quantity;
+                    await availableStock.save();
+                } else {
+                    console.error("NO SE ENCONTRÓ EL STOCK")
+                    ctx.status = 404;
+                    ctx.body = { error: 'Failed to discount fraction' };
+                }
+
+                console.log(availableStock, "available stock")
+                ctx.body = transaction;
+                ctx.status = 200;
+            } catch (error) {
+                console.error('Error publishing MQTT message:', error);
+                ctx.status = 500;
+                ctx.body = { error: 'Failed to discount fraction' };
             }
         }
 

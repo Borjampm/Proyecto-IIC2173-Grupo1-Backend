@@ -16,7 +16,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       Quantity: {
-        type: Sequelize.INTEGER
+        type: Sequelize.FLOAT
       },
       Price: {
         type: Sequelize.FLOAT

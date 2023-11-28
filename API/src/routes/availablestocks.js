@@ -56,6 +56,7 @@ router.get('stock.available', '/all', async (ctx) => {
                 price: price,
                 company: companyId.companyId,
                 company_name: companyData.shortName,
+                company_symbol: companyData.symbol,
             }
 
             data.push(finalData);
