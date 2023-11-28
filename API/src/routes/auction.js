@@ -227,6 +227,24 @@ router.get('auctions.show', '/offers', async (ctx) => {
     }
 });
 
+// Show offers from my group
+router.get('auctions.show', '/my-offers', async (ctx) => {
+    try {
+        // find all offers from other groups
+        const auctions = await ctx.orm.Auction.findAll({
+            where: {
+                type: 'offer',
+                group_id: 1
+            }
+
+    });
+        ctx.body = auctions;
+        ctx.status = 200;
+    } catch (error) {
+        console.error(consoleError, error);
+    }
+});
+
 // Send auction to broker
 router.post('auction.create', '/send', async (ctx) => {
     try {
