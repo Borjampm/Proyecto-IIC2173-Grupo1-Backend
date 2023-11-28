@@ -315,6 +315,22 @@ router.get('auctions.show', '/my-proposals', async (ctx) => {
     }
 });
 
+// Show my active proposals
+router.get('auctions.show', '/my-proposals/history', async (ctx) => {
+    try {
+        // find all proposals for a specific offer
+        const proposals = await ctx.orm.Proposal.findAll({
+            where: {
+                group_id: 1
+            }
+    });
+        ctx.body = proposals;
+        ctx.status = 200;
+    } catch (error) {
+        console.error(consoleError, error);
+    }
+});
+
 // Send auction to broker
 router.post('auction.create', '/send', async (ctx) => {
     try {
