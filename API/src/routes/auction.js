@@ -245,6 +245,22 @@ router.get('auctions.show', '/my-offers', async (ctx) => {
     }
 });
 
+// Show all proposals for a specific offer
+router.get('auctions.show', '/proposals/:auction_id', async (ctx) => {
+    try {
+        // find all proposals for a specific offer
+        const proposals = await ctx.orm.Proposal.findAll({
+            where: {
+                auction_id: ctx.params.auction_id
+            }
+    });
+        ctx.body = proposals;
+        ctx.status = 200;
+    } catch (error) {
+        console.error(consoleError, error);
+    }
+});
+
 // Send auction to broker
 router.post('auction.create', '/send', async (ctx) => {
     try {
