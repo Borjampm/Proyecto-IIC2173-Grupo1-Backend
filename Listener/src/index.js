@@ -1,3 +1,4 @@
+require('newrelic');
 const app = require('./app');
 const connectToBroker = require('./broker/connection');
 
