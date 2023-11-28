@@ -125,6 +125,12 @@ router.post('/buy/admin', async (ctx) => {
         const TotalAmount = request.Price * request.Quantity;
         console.log("TOTAL AMOUNT", TotalAmount)
 
+        console.log("=============================================")
+        console.log(request)
+        console.log(request.Username)
+        console.log(user)
+        console.log("=============================================")
+
         // Create Transaction
         const transaction = await ctx.orm.Transaction.create({
             Username: user.Username,
