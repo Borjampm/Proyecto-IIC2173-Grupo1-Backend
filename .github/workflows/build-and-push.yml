@@ -5,6 +5,7 @@ on:
         branches:
             - main
             - fix-CD
+            
 permissions:
     id-token: write
     contents: read
