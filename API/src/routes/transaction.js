@@ -1,6 +1,7 @@
 const Router = require('koa-router');
 const mqtt = require('mqtt');
 const { Op } = require('sequelize');
+const newrelic = require("newrelic");
 
 const {WebpayPlus} = require("transbank-sdk"); // CommonJS
 const { Options, IntegrationApiKeys, Environment, IntegrationCommerceCodes } = require("transbank-sdk"); // CommonJS
@@ -26,6 +27,8 @@ password: MQTT_PASSWORD,
 client.on('connect', () => {
 console.log('Connected to MQTT broker');
 });
+
+//n_transactions
 
 // Listen for MQTT error event
 client.on('error', (error) => {
@@ -100,6 +103,7 @@ router.post('/buy', async (ctx) => {
                 ctx.status = 500;
                 ctx.body = { error: 'Failed to publish MQTT message' };
             }
+            newrelic.incrementMetric('n_transactions', 1);
 
             // ctx.status = 200;
             // ctx.body = { message: 'MQTT message published successfully' };
