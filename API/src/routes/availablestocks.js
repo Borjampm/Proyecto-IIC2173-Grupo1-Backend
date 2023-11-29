@@ -18,6 +18,24 @@ router.get('stock.available', '/all', async (ctx) => {
     }
 });
 
+// get available stocks from company
+router.get('stock.available', '/company/:symbol', async (ctx) => {
+    try {
+        const stock = await ctx.orm.AvailableStock.findOne({
+            where: {
+                stock_id: ctx.params.symbol,
+            },
+        });
+        ctx.body = stock;
+        ctx.status = 201;
+    } catch (error) {
+        console.error(consoleError, error);
+        ctx.body = generalError;
+        ctx.status = 400;
+    }
+});
+
+
 // add a new stock to the available stocks
 router.post('stock.available', '/add', async (ctx) => {
     try {
