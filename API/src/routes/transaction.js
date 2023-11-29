@@ -130,7 +130,7 @@ router.post('/admin/buy', async (ctx) => {
         });
 
         const TotalAmount = parseInt(request.Price * request.Quantity);
-        
+
         const transaction = await ctx.orm.Transaction.create({
             Username: user.Username,
             CompanyId: company.id,
@@ -147,7 +147,7 @@ router.post('/admin/buy', async (ctx) => {
         // Webpay implementation
         const tx = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration));
         console.log('attempting webpay')
-        const returnURL = `${process.env.FRONT_URL}/validate-transaction`;
+        const returnURL = `${process.env.FRONT_URL}/admin/validate-transaction`;
         console.log(returnURL);
         const response = await tx.create('buy_order', transaction.id, TotalAmount*100, returnURL);
         console.log(response);
@@ -202,7 +202,7 @@ router.post('/fraction/buy', async (ctx) => {
         });
 
         const TotalAmount = parseInt(request.Price * request.Quantity);
-        
+
         const transaction = await ctx.orm.Transaction.create({
             Username: user.Username,
             CompanyId: company.id,
@@ -249,6 +249,12 @@ router.post('/webpay-result', async (ctx) => {
             where: {
                 id: response.session_id
             }
+
+        });
+        const company = await ctx.orm.Company.findOne({
+            where: {
+                id: transaction.CompanyId
+            }
         });
         if (response.vci == 'TSY') {
             transaction.Completed = true;
@@ -265,6 +271,16 @@ router.post('/webpay-result', async (ctx) => {
                 // Publish the message to the MQTT topic_requests
                 client.publish(topicValidate, payload);
                 console.log("works?")
+                // remove stock from availablestocks
+                const availableStock = await ctx.orm.AvailableStock.findOne({
+                    where: {
+                        stock_id: company.symbol
+                    }
+                });
+                if (availableStock) {
+                    availableStock.amount -= transaction.Quantity;
+                    await availableStock.save();
+                }
                 ctx.body = transaction;
                 ctx.status = 200;
             } catch (error) {
